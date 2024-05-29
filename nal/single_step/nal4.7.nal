@@ -1,0 +1,23 @@
+' File: nal4.7.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' composition on both sides of a statement 双侧陈述内涵像
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.05秒，给启动留足时间
+''sleep: 0.05s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭中和反应 是一种 反应
+$0.80;0.80;0.95$ <neutralization --> reaction>. %1.00;0.90%
+
+' * ❓什么可以中和酸
+$0.90;0.80;1.00$ <(\,neutralization,acid,_) --> ?x>?
+
+' * 💡能跟酸反应的 可以中和酸
+''expect-cycle(100,10,0.1s): ANSWER <(\,neutralization,acid,_) --> (\,reaction,acid,_)>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

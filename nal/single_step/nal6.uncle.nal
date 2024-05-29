@@ -1,0 +1,22 @@
+' File: nal6.uncle.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' ```
+' would be a strange variable introduction when it would be allowed to use ImageExt and not just looking at <SUB --> PRED>
+' this is a strange example I added..
+' ```
+
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+$0.80;0.80;0.95$ <tim --> (/,uncle,_,tom)>. %1.00;0.90%
+$0.80;0.80;0.95$ <tim --> (/,uncle,tom,_)>. %0.00;0.90%
+
+''expect-cycle(20,2,0.1s): OUT <<$1 --> (/,uncle,_,$2)> ==> <$1 --> (/,uncle,$2,_)>>. %0.00;0.40%
+
+' * 🔚退出测试
+''terminate(if-no-user)

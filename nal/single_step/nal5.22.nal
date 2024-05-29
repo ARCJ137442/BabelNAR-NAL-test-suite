@@ -1,0 +1,23 @@
+' File: nal5.22.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' contraposition 逆否
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭不太可能 若 知更鸟不是一种鸟 则 知更鸟会飞
+$0.80;0.80;0.95$ <(--,<robin --> bird>) ==> <robin --> [flying]>>. %0.10;0.90%
+
+' * ❓若 知更鸟不会飞 则 知更鸟是一种鸟 吗
+$0.90;0.80;1.00$ <(--,<robin --> [flying]>) ==> <robin --> bird>>?
+
+' * 💡或许不太可能的是 若 知更鸟不会飞 则 知更鸟是一种鸟
+''expect-cycle(100,10,0.1s): ANSWER <(--,<robin --> [flying]>) ==> <robin --> bird>>. %0.00;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

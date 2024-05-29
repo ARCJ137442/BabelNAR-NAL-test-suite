@@ -1,0 +1,32 @@
+' File: nal6.18.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' variable introduction 引入@同后项
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭海鸥会游泳
+$0.80;0.80;0.95$ <gull --> swimmer>. %1.00;0.90%
+
+' * 💭通常来说 天鹅会游泳
+$0.80;0.80;0.95$ <swan --> swimmer>. %0.80;0.90%
+
+' * 💡也许 通常来说 若 海鸥是某物 则 天鹅是它
+''expect-cycle(10,1,0.1s): OUT <<gull --> $1> ==> <swan --> $1>>. %0.80;0.45%
+
+' * 💡也许 若 天鹅是某物 则 海鸥是它
+''expect-cycle(10,1,0.1s): OUT <<swan --> $1> ==> <gull --> $1>>. %1.00;0.39%
+
+' * 💡也许 海鸥和天鹅共享所有属性
+''expect-cycle(10,1,0.1s): OUT <<gull --> $1> <=> <swan --> $1>>. %0.80;0.45%
+
+' * 💡海鸥和天鹅有某些共性
+''expect-cycle(10,1,0.1s): OUT (&&,<gull --> #1>,<swan --> #1>). %0.80;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

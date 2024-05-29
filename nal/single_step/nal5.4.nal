@@ -1,0 +1,26 @@
+' File: nal5.4.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' abduction 高阶归因
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 知更鸟是一种鸟 则 知更鸟是一种动物
+$0.80;0.80;0.95$ <<robin --> bird> ==> <robin --> animal>>. %1.00;0.90%
+
+' * 💭若 知更鸟会飞 则 知更鸟是一种动物
+$0.80;0.80;0.95$ <<robin --> [flying]> ==> <robin --> animal>>. %0.80;0.90%
+
+' * 💡也许 若 知更鸟是一种鸟 则 知更鸟会飞
+''expect-cycle(20,2,0.1s): OUT <<robin --> bird> ==> <robin --> [flying]>>. %1.00;0.39%
+
+' * 💡也许 若 知更鸟会飞 则 知更鸟是一种鸟
+''expect-cycle(20,2,0.1s): OUT <<robin --> [flying]> ==> <robin --> bird>>. %0.80;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

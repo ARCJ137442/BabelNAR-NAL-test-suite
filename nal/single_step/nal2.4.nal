@@ -1,0 +1,23 @@
+' File: nal2.4.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' analogy 类比（后项继承）
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭天鹅会游泳
+$0.80;0.80;0.95$ <swan --> swimmer>. %1.00;0.90%
+
+' * 💭海鸥与天鹅相似
+$0.80;0.80;0.95$ <gull <-> swan>. %1.00;0.90%
+
+' * 💡海鸥会游泳
+''expect-cycle(10,1,0.1s): OUT <gull --> swimmer>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

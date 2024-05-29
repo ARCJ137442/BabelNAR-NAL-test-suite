@@ -1,0 +1,23 @@
+' File: nal3.7.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' composition on both sides of a statement 双侧陈述外延差
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭鸟是一种动物
+$0.80;0.80;0.95$ <bird --> animal>. %0.90;0.90%
+
+' * ❓会游泳的非动物 是一种 会游泳的非鸟 吗
+$0.90;0.80;1.00$ <(-,swimmer,animal) --> (-,swimmer,bird)>?
+
+' * 💡会游泳的非动物 可能是一种 会游泳的非鸟
+''expect-cycle(1000,100,0.1s): ANSWER <(-,swimmer,animal) --> (-,swimmer,bird)>. %0.90;0.73%
+
+' * 🔚退出测试
+''terminate(if-no-user)

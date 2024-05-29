@@ -1,0 +1,23 @@
+' File: nal2.1.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' comparison 比较同前项
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭天鹅会游泳
+$0.80;0.80;0.95$ <swan --> swimmer>. %0.90;0.90%
+
+' * 💭天鹅是一种鸟
+$0.80;0.80;0.95$ <swan --> bird>. %1.00;0.90%
+
+' * 💡鸟或许与游泳者相似
+''expect-cycle(10,1,0.1s): OUT <bird <-> swimmer>. %0.90;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

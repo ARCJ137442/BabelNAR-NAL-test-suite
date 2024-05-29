@@ -1,0 +1,23 @@
+' File: nal2.6.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' resemblance 相似传递
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭知更鸟与天鹅相似
+$0.80;0.80;0.95$ <robin <-> swan>. %1.00;0.90%
+
+' * 💭海鸥与天鹅相似
+$0.80;0.80;0.95$ <gull <-> swan>. %1.00;0.90%
+
+' * 💡海鸥与知更鸟相似
+''expect-cycle(10,1,0.1s): OUT <gull <-> robin>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

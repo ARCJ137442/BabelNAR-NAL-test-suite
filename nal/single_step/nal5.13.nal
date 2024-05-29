@@ -1,0 +1,26 @@
+' File: nal5.13.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound composition, two premises 合取析取后组合
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 知更鸟是一种鸟 则 知更鸟是一种动物
+$0.80;0.80;0.95$ <<robin --> bird> ==> <robin --> animal>>. %1.00;0.90%
+
+' * 💭若 知更鸟是一种鸟 则 知更鸟会飞
+$0.80;0.80;0.95$ <<robin --> bird> ==> <robin --> [flying]>>. %0.90;0.90%
+
+' * 💡通常来说 若 知更鸟是一种鸟 则 知更鸟是一种动物 且 知更鸟会飞
+''expect-cycle(20,2,0.1s): OUT <<robin --> bird> ==> (&&,<robin --> [flying]>,<robin --> animal>)>. %0.90;0.81%
+
+' * 💡若 知更鸟是一种鸟 则 知更鸟是一种动物 或 知更鸟会飞
+''expect-cycle(20,2,0.1s): OUT <<robin --> bird> ==> (||,<robin --> [flying]>,<robin --> animal>)>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

@@ -1,0 +1,23 @@
+' File: nal6.0.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' variable unification 统一+修正
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 某物是一种鸟 则 它会飞
+$0.80;0.80;0.95$ <<$x --> bird> ==> <$x --> flyer>>. %1.00;0.90%
+
+' * 💭并非 若 某物是一种鸟 则 它会飞
+$0.80;0.80;0.95$ <<$y --> bird> ==> <$y --> flyer>>. %0.00;0.70%
+
+' * 💡通常来说 若 某物是一种鸟 则 它会飞
+''expect-cycle(10,1,0.1s): OUT <<$1 --> bird> ==> <$1 --> flyer>>. %0.79;0.92%
+
+' * 🔚退出测试
+''terminate(if-no-user)

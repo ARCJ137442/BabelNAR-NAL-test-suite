@@ -1,0 +1,23 @@
+' File: nal1.4.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' Exemplification 举例推理
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭知更鸟是一种鸟
+$0.80;0.80;0.95$ <robin --> bird>. %1.00;0.90%
+
+' * 💭鸟是一种动物
+$0.80;0.80;0.95$ <bird --> animal>. %1.00;0.90%
+
+' * 💡动物可能是一种知更鸟
+''expect-cycle(10,1,0.1s): OUT <animal --> robin>. %1.00;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

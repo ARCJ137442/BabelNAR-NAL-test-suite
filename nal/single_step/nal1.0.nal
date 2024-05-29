@@ -1,0 +1,27 @@
+' File: nal1.0.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' Revision 修正推理
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭鸟会游泳
+$0.80;0.80;0.95$ <bird --> swimmer>. %1.00;0.90%
+
+' * 💭鸟有可能不会游泳
+$0.80;0.80;0.95$ <bird --> swimmer>. %0.10;0.60%
+
+' * 💡鸟很可能会游泳
+' * 🚩边推理边检验：每次推理十步，最多推理十次
+' * 📝OpenNARS中对Shell命令行，默认启用的是`volume=0`即「完全静音」
+' * 📝PyNARS推导出的是`<bird-->swimmer>. %0.871;0.913%`
+''expect-cycle(10,1,0.1s): OUT <bird --> swimmer>. %0.87;0.91%
+
+' 用户无法输入时退出（正常退出）
+' * 🔚退出测试
+''terminate(if-no-user)

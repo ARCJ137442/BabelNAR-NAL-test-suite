@@ -1,0 +1,23 @@
+' File: nal4.6.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' composition on both sides of a statement 双侧陈述组合积
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.05秒，给启动留足时间
+''sleep: 0.05s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭鸟是一种动物
+$0.80;0.80;0.95$ <bird --> animal>. %1.00;0.90%
+
+' * ❓鸟和植物的关系是什么
+$0.90;0.80;1.00$ <(*,bird,plant) --> ?x>?
+
+' * 💡鸟和植物的关系 是一种 动物和植物的关系
+''expect-cycle(100,10,0.1s): ANSWER <(*,bird,plant) --> (*,animal,plant)>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

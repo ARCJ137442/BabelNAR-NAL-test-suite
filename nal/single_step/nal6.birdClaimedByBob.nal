@@ -1,0 +1,20 @@
+' File: nal6.birdClaimedByBob.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' from https://code.google.com/archive/p/open-nars/issues/7
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+$0.80;0.80;0.95$ <(&,<{Tweety} --> bird>,<bird --> fly>) --> claimedByBob>. %1.00;0.90%
+$0.80;0.80;0.95$ <<(&,<#1 --> $2>,<$3 --> #1>) --> claimedByBob> ==> <<$3 --> $2> --> claimedByBob>>. %1.00;0.90%
+
+$0.90;0.80;1.00$ <?x --> claimedByBob>?
+
+''expect-cycle(100,10,0.1s): OUT <<{Tweety} --> fly> --> claimedByBob>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

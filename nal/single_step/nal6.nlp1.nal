@@ -1,0 +1,17 @@
+' File: nal6.nlp1.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+$0.80;0.80;0.95$ <(\,REPRESENT,_,CAT) --> cat>. %1.00;0.90%
+$0.80;0.80;0.95$ <(\,(\,REPRESENT,_,<(*,CAT,FISH) --> FOOD>),_,eat,fish) --> cat>. %1.00;0.90%
+
+''expect-cycle(10,1,0.1s): OUT <<(\,REPRESENT,_,$1) --> $2> ==> <(\,(\,REPRESENT,_,<(*,$1,FISH) --> FOOD>),_,eat,fish) --> $2>>. %1.00;0.40%
+
+' * 🔚退出测试
+''terminate(if-no-user)

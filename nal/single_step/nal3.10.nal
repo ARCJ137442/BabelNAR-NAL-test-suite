@@ -1,0 +1,23 @@
+' File: nal3.10.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound composition,one premise 单句组合外延差
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭天鹅是一种鸟
+$0.80;0.80;0.95$ <swan --> bird>. %0.90;0.90%
+
+' * ❓天鹅是一种非鸟游泳者吗
+$0.90;0.80;1.00$ <swan --> (-,swimmer,bird)>?
+
+' * 💡天鹅不是一种非鸟游泳者
+''expect-cycle(80,4,0.1s): ANSWER <swan --> (-,swimmer,bird)>. %0.10;0.73%
+
+' * 🔚退出测试
+''terminate(if-no-user)

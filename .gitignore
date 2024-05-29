@@ -1,0 +1,18 @@
+# 工作区配置
+.idea/
+.vscode/
+
+# Python缓存文件
+__pycache__/
+
+# 测试文件
+*.test.*
+test_results/
+
+# 主动忽略的文件
+\[ignored\]*
+*ignored.*
+
+# 临时文件
+temp*
+*.tmp

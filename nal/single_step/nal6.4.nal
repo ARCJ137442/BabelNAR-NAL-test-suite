@@ -1,0 +1,23 @@
+' File: nal6.4.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' variable unification 统一+蕴含演绎换条件
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 某物会飞 且 它会叫 则 它是一种鸟
+$0.80;0.80;0.95$ <(&&,<$x --> flyer>,<$x --> [chirping]>) ==> <$x --> bird>>. %1.00;0.90%
+
+' * 💭若 某物有翅膀 则 它会飞
+$0.80;0.80;0.95$ <<$y --> [with_wings]> ==> <$y --> flyer>>. %1.00;0.90%
+
+' * 💡若 某物会叫 且 它有翅膀 则 它是一种鸟
+''expect-cycle(10,1,0.1s): OUT <(&&,<$1 --> [chirping]>,<$1 --> [with_wings]>) ==> <$1 --> bird>>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)
