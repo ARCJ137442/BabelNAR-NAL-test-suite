@@ -8,7 +8,7 @@ from os import getcwd
 from typing import Iterable, List, Optional, Union
 import re
 from util import *
-from time import time
+from time import time, sleep
 
 
 def __ROOT() -> str:
@@ -18,7 +18,7 @@ def __ROOT() -> str:
     root = getcwd().replace('\\', '/')
     # # 自动修正根路径
     # if 'test/' not in root:
-        # root += '/test/'
+    # root += '/test/'
     root += '/'
     return root
 
@@ -343,6 +343,20 @@ class TestResult:
         # 返回
         return self
 
+    def process_invalid(self) -> bool:
+        '''是否进程无效
+        - 🎯用于判断「测试OpenNARS时，进程是否意外终止」
+            - 📌【2024-05-30 10:01:40】现象：有些测试实际上是「Java环境不稳定，导致OpenNARS提前终止」导致的测试失败
+            - 🚩【2024-05-30 10:02:32】目前处理办法：遇到此类情况，直接重做
+        '''
+        return (
+            self.output_std is not None
+            and '子进程已关闭' in self.output_std  # 🚩判断标准输出是否意外终止（⚠️仅中文）
+        ) or (
+            self.output_err is not None
+            and 'SendError' in self.output_err  # 🚩判断BabelNAR CLI是否存在「消息发送失败」情况
+        )
+
 
 KillJavaTimeouts = Optional[Iterable[float]]
 '''杀Java超时时间（迭代器）
@@ -417,13 +431,13 @@ class TestFile:
         - 📌结合「全局Java超时时长」与自身的「局部Java超时时长」
         - 🚩**具体生效逻辑**：
           - 全局「不杀Java」 ⇒ 不杀
-          - 全局「杀Java」 + 此项为负 ⇒ 仍杀Java
+          - 全局「杀Java」 + 此项为空 ⇒ 仍杀Java
           - 均「杀Java」 ⇒ 覆盖「全局超时时间」继续杀Java
         '''
         # 全局「不杀Java」 ⇒ 不杀
         if global_timeout is None:
             return global_timeout
-        # 全局「杀Java」 + 此项为负 ⇒ 仍杀Java
+        # 全局「杀Java」 + 此项为空 ⇒ 仍杀Java
         elif self.local_kill_java_timeouts is None:
             return global_timeout
         # 均「杀Java」 ⇒ 覆盖「全局超时时间」继续杀Java
@@ -503,10 +517,19 @@ class NARSType:
         else:
             # 遍历其中所有「超时杀Java」时长
             for timeout in kill_java_timeouts:
+                avoid_timeout = 1
+                while True:
+                    result = run_test_nal(self.launch_config_path,
+                                          test_file.nal_index_name,
+                                          kill_java_timeouts=timeout)
+                    # 只返回「进程有效」的结果
+                    if result.process_invalid():
+                        print(f'测试进程意外终止！指数退避{avoid_timeout}s，重新组织测试中……')
+                        sleep(avoid_timeout)
+                        avoid_timeout *= 2
+                    else:
+                        break
                 # 只要一个成功，即退出——否则失败
-                result = run_test_nal(self.launch_config_path,
-                                      test_file.nal_index_name,
-                                      kill_java_timeouts=timeout)
                 if result.success:
                     break
         assert result is not None  # 检验非空（一般不会发生）
@@ -556,19 +579,14 @@ def __run_cli_with_configs(*config_paths: str, interactive: bool = False, kill_j
         # * ⚠️若需强制杀死Java进程以避免程序阻塞，则需要`kill_java_timeouts`>=0
         # * 🎯【2024-05-09 15:52:41】目前仍然无法从BabelNAR CLI避免「Java残留进程阻塞工具链」的问题
         if kill_java_timeouts >= 0:
-            # 并行启动，然后不断轮询「是否结束」直到某个超时时间
+            # 并行启动，然后间隔一段时间杀死Java进程
             process = subprocess.Popen(cmd,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
-            from time import time, sleep
+            from time import sleep
             # * ⚠️【2024-05-09 16:43:34】`process.poll()`也会造成主进程阻塞，不用
             # * 🚩【2024-05-09 16:44:19】现在无论如何都要kill掉Java进程
             sleep(kill_java_timeouts)
-            # now = time()
-            # while time() - now < kill_java_timeouts:
-            #     # if process.poll() is not None:
-            #     #     return process
-            #     sleep(0.5)
             process.kill()
             subprocess.Popen(['taskkill', '-f', '-im', 'java.exe'])
 
@@ -664,5 +682,3 @@ def show_result(result: TestResult, verbose: bool = False, user_interactive: boo
             print(f'标准输出 = """\n{result.output_std.strip()}\n"""')
         if result.output_err:
             print(f'错误输出 = """\n{result.output_err.strip()}\n"""')
-
-
