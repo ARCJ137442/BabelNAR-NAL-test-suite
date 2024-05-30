@@ -583,7 +583,6 @@ def __run_cli_with_configs(*config_paths: str, interactive: bool = False, kill_j
             process = subprocess.Popen(cmd,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
-            from time import sleep
             # * ⚠️【2024-05-09 16:43:34】`process.poll()`也会造成主进程阻塞，不用
             # * 🚩【2024-05-09 16:44:19】现在无论如何都要kill掉Java进程
             sleep(kill_java_timeouts)
