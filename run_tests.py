@@ -42,8 +42,8 @@ CrossTestResult = Dict[Tuple[NARSType, TestFile], TestResult]
 
 
 def perform_cross_tests(
-    nars_types: List[NARSType] = ALL_NARS_TYPES,
-    test_files: List[TestFile] = ALL_TEST_FILES,
+    nars_types: List[NARSType],
+    test_files: List[TestFile],
     *,
     verbose_on_success: bool = True,
     verbose_on_fail: bool = True,
@@ -222,8 +222,8 @@ def groupby_test(
 
 
 def group_test(
-    nars_types: List[NARSType] = ALL_NARS_TYPES,
-    test_files: List[TestFile] = ALL_TEST_FILES,
+    nars_types: List[NARSType],
+    test_files: List[TestFile],
     group_name: Callable[[TestFile], str] = default_group_name,
     *,
     verbose_on_success: bool = True,
@@ -390,10 +390,15 @@ def main():
     '''主函数（仅直接执行时）'''
 
     # 计时开始 #
-    result, total_time = main_test()
+    try:
+        result, total_time = main_test()
+    except KeyboardInterrupt:
+        print('\n用户中断测试，主程序退出')
+        return
 
     # 展示结果 #
-    main_show(result, total_time)
+    # * 🚩【2024-05-31 17:33:57】仅展示两级（大量测试不方便对比时间）
+    show_test_result(result, total_time, show_diff=True, diff_level=2)
 
     # 存储结果 #
     main_store(result)
@@ -402,13 +407,21 @@ def main():
     exit(0)
 
 
-def main_test():
+def main_test(
+    nars_types: List[NARSType] = ALL_NARS_TYPES,
+    test_files: List[TestFile] = ALL_TEST_FILES,
+    verbose_on_success: bool = True,
+    verbose_on_fail: bool = True,
+):
     '''实际运行测试'''
     now = time()
 
     # 计算结果 #
     # * 🚩【2024-05-09 20:28:22】现在直接测试所有的「NARS类型×测试文件」组合
-    result = group_test()
+    result = group_test(
+        nars_types, test_files,
+        verbose_on_success=verbose_on_success,
+        verbose_on_fail=verbose_on_fail,)
 
     # 计算实际总耗时 #
     total_time = time() - now
@@ -425,9 +438,14 @@ def main_store(result: GroupTestResult):
     store_group_test(result, file_root=file_root, file_name=file_name)
 
 
-def main_show(result: GroupTestResult, total_time: float):
+def show_test_result(
+    result: GroupTestResult, total_time: Optional[float] = None,
+    show_diff: bool = True, diff_level: Optional[int] = 0xff
+):
     '''展示所有测试'''
-    print(f'所有NAL测试完毕，总耗时 {total_time:.2f} 秒。')
+    # 展示表格
+    if result is not None:
+        print(f'所有NAL测试完毕，总耗时 {total_time:.2f} 秒。')
     for (group_name, results) in result.items():
         # 计算总耗时
         d_time = sum(
@@ -441,6 +459,11 @@ def main_show(result: GroupTestResult, total_time: float):
         # 展示
         name = f"测试组 {group_name}" if group_name else "所有NAL测试"
         print(f'  {name} 运行完毕，总运行耗时 {d_time:.2f} 秒：\n{table}')
+
+    # 展示差异 | 默认显示所有细节
+    if show_diff:
+        from diff_analyze import show_group_diffs
+        show_group_diffs(result, show_level=diff_level)
 
 
 if __name__ == '__main__':

@@ -7,9 +7,9 @@
 '''
 
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 from result_loader import load_group_results
-from run_tests import CrossTestResultToShow, GroupTestResultToShow
+from run_tests import CrossTestResultToShow, GroupTestResult, GroupTestResultToShow, result_to_show
 from toolchain import TestResult
 from util import *
 
@@ -78,7 +78,7 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
     elif show_level > 2 and not_same(
             r.time_diff
             for _, r in nars_results):
-        print(f'- 🕒 推理时间：', 1)
+        print(f'- 🕒 运行耗时：', 1)
         # 此处直接列举
         for nars_name, r in nars_results:
             print(f'{nars_name} => {r.time_diff}', 2)
@@ -112,7 +112,7 @@ def nars_diff(results: CrossTestResultToShow, show_level: int) -> str:
     return result
 
 
-def get_show_level() -> int:
+def request_show_level() -> int:
     while True:
         try:
             level_str = input('请输入对比等级（0-3，留空默认为2）：')
@@ -121,17 +121,18 @@ def get_show_level() -> int:
             print('输入错误！请重新输入！')
 
 
-def main_one(results: GroupTestResultToShow) -> None:
-    '''处理单个解析好了的「测试结果」'''
+def show_group_diffs(results: Union[GroupTestResult, GroupTestResultToShow], show_level: Optional[int] = None) -> None:
+    '''展示单个解析好了的「分组测试结果」'''
 
-    # 请求「对比等级」
-    show_level = get_show_level()
+    # 未指定「对比等级」⇒靠用户输入请求
+    level = show_level if show_level else request_show_level()
 
     # 逐组打印测试结果
     print()
-    for group_name, group_result in results.items():
+    for group_name, cross_result in results.items():
         # 计算结果
-        table = nars_diff(group_result, show_level)
+        group_result = result_to_show(cross_result)
+        table = nars_diff(group_result, level)
         # 打印结果
         if table.strip():
             print(f'# 组名 {group_name}\n\n{table}')
@@ -149,7 +150,7 @@ def main_path(path: str) -> None:
     results = load_group_results(path)
 
     # 处理（&展示）测试结果
-    return main_one(results)
+    return show_group_diffs(results)
 
 
 def main():

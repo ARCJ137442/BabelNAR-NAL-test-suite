@@ -3,7 +3,8 @@
 - 📌基于「测试运行」系列方法
 '''
 
-from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, group_test, main_show, main_store
+from diff_analyze import show_group_diffs
+from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, group_test, show_test_result, main_store, main_test
 from toolchain import *
 from util import *
 
@@ -48,11 +49,11 @@ def query_tests(queries: Iterable[str], print_feedback: bool = True) -> Optional
             raise KeyboardInterrupt()
         print_feedback and print('\n输入中断，测试列表已清空！')
         return None
-    # 返回测试
+    # 返回测试用例列表
     return tests
 
 
-def main_one(tests: Optional[List[TestFile]], print_feedback: bool = True):
+def main_one(tests: Optional[List[TestFile]], *, print_feedback: bool = True):
     '''根据指定的一个/多个测试用例，运行测试并返回部分化的结果'''
     '''主函数（仅直接执行时）'''
 
@@ -72,22 +73,15 @@ def main_one(tests: Optional[List[TestFile]], print_feedback: bool = True):
             for nars_type in nars_types:
                 print(f'- 测试 @ {file.name} × {nars_type.name}')
 
-    # 计时开始 #
-    now = time()
-
     # 开始运行
-    # * 🚩【2024-05-09 20:28:22】现在直接测试所有的「NARS类型×测试文件」组合
-    result = group_test(nars_types=nars_types, test_files=tests)
-
-    # 计算实际总耗时 #
-    total_time = time() - now
+    results, total_time = main_test(nars_types=nars_types, test_files=tests)
 
     # 展示结果 #
-    main_show(result, total_time)
+    show_test_result(results, total_time)
 
     # 询问是否保存测试结果
     if input('是否保存结果？（非空→保存，空行→不保存）：'):
-        main_store(result)
+        main_store(results)
 
 
 def main():
@@ -102,6 +96,8 @@ def main():
             inputs = InputIterator('请输入要测试的测试用例（输入空行以启动）: ')
             tests = query_tests(inputs)
             main_one(tests)
+            # 空行分隔
+            print()
     except KeyboardInterrupt:
         print('\n主程序退出')
 
