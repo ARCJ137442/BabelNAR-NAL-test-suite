@@ -13,9 +13,12 @@ def find_tests(query: str) -> List[TestFile]:
     return collect(filter(lambda file: query_hit(file, query), ALL_TEST_FILES))
 
 
-def query_tests(queries: Iterable[str], print_feedback: bool = True) -> List[TestFile]:
+def query_tests(queries: Iterable[str], print_feedback: bool = True) -> Optional[List[TestFile]]:
     '''请求要测试的测试集
-    - 🚩通过请求用户输入，从已有测试中搜索出相应的测试用例'''
+    - 🚩通过请求用户输入，从已有测试中搜索出相应的测试用例
+    - ⚠️在测试输入被中断时，返回`None`表示空值
+        - 🎯用于避免非必要的「未找到任何测试」提示
+    '''
     tests: List[TestFile] = []
 
     # 请求输入 | 此处可以是特殊的「用户输入迭代器」，只要能迭代字符串即可
@@ -36,17 +39,21 @@ def query_tests(queries: Iterable[str], print_feedback: bool = True) -> List[Tes
                 tests.extend(new_tests)
     # Ctrl+C中断填充 | 🎯应对「误增加测试」的情况
     except KeyboardInterrupt:
+        if is_empty(tests):  # 若测试列表为空，则重新抛出异常
+            raise KeyboardInterrupt()
         print_feedback and print('\n输入中断，测试列表已清空！')
-        tests.clear()
+        return None
     # 返回测试
     return tests
 
 
-def main_one(tests: List[TestFile], print_feedback: bool = True):
+def main_one(tests: Optional[List[TestFile]], print_feedback: bool = True):
     '''根据指定的一个/多个测试用例，运行测试并返回部分化的结果'''
     '''主函数（仅直接执行时）'''
 
     # 提前检验
+    if tests is None:
+        return  # 空值⇒静默结束（不论是否print）
     if is_empty(tests):
         print_feedback and print(f'未找到任何可以开始的测试！')
         return  # 没测试⇒提前结束
