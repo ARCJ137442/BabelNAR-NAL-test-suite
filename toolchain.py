@@ -4,44 +4,10 @@
 '''
 import subprocess
 from subprocess import CompletedProcess, Popen
-from os import getcwd
 from typing import Iterable, List, Optional, Union
 import re
 from util import *
 from time import time, sleep
-
-
-def __ROOT() -> str:
-    '''自动获取并计算根路径
-    - 🎯功能分离，常量区保持「一个常量一行定义」
-    '''
-    root = getcwd().replace('\\', '/')
-    # # 自动修正根路径
-    # if 'test/' not in root:
-    # root += '/test/'
-    root += '/'
-    return root
-
-
-ROOT = __ROOT()
-'''文件夹的根路径
-- 🚩【2024-04-26 09:58:03】统一反斜杠「\」为正斜杠「/」
-'''
-
-EXECUTABLES_ROOT = ROOT + 'executables/'
-'''存放可执行文件的根路径'''
-
-BABELNAR_CLI = EXECUTABLES_ROOT + 'babelnar_cli.exe'
-'''BabelNAR CLI 本体路径'''
-
-CONFIG_ROOT = ROOT + 'config/'
-'''配置文件的根路径'''
-
-CONFIG_NAL = CONFIG_ROOT + 'test_nal/'
-'''存放NAL配置文件的根路径'''
-
-CONFIG_NAL_PRELUDE = CONFIG_ROOT + 'prelude_test.hjson'
-'''用于在BabelNAR CLI启动后预置NAL测试文件的配置（NAL测试环境）'''
 
 
 class ProcessResult:
@@ -553,6 +519,7 @@ def __build_cli_launch_cmd(*config_paths: str) -> List[str]:
     - ⚠️需要自行输入「启动」配置
     '''
     # exe前缀
+    from constants import BABELNAR_CLI
     cmd = [BABELNAR_CLI]
     # 加入路径
     for config_path in config_paths:
@@ -630,6 +597,7 @@ def run_test_nal(
         TestResult: 测试结果
     '''
     # 构建完整的「NAL预加载」配置文件路径
+    from constants import CONFIG_NAL, CONFIG_NAL_PRELUDE
     NAL_HJSON_PATH = CONFIG_NAL + f'{nal_hjson_name}.hjson'
 
     # 计时器准备

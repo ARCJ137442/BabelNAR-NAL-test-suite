@@ -53,19 +53,25 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
     '''对比单个测试中不同NARS的表现差异'''
     result = ''
 
+    if is_empty(nars_results):  # 空值⇒无差异
+        return result
+
     def print(obj='', n_indent=0, end='\n'):
         nonlocal result, indent
         result += (indent * n_indent) + obj + end
 
     # 分析 & 追加 #
+    max_display_len = max(len_display(nars_name)
+                          for nars_name, _ in nars_results)
     # 1. 部分成功⇒展示「成功/失败」的差异
     if show_level > 0 and not_same(
             r.success
             for _, r in nars_results):
         print('- ⚠️ 部分成功：', 1)
         for nars_name, r in nars_results:
+            name = pad_display_spaces(nars_name, max_display_len)
             mark = '✅' if r.success else '❌'
-            print(f'{nars_name} => {mark}', 2)
+            print(f'{name} => {mark}', 2)
     # 2. 成功所用步数不同⇒展示步数之差
     elif show_level > 1 and not_same(
             r.success_cycles  # 📝Python对数组的`==`判等是按值判等
@@ -73,7 +79,8 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
         print(f'- ℹ️ 所用步数：', 1)
         # 此处直接列举
         for nars_name, r in nars_results:
-            print(f'{nars_name} => {r.success_cycles}', 2)
+            name = pad_display_spaces(nars_name, max_display_len)
+            print(f'{name} => {r.success_cycles}', 2)
     # 3. 运行时间不同⇒展示时间之差
     elif show_level > 2 and not_same(
             r.time_diff
@@ -81,7 +88,8 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
         print(f'- 🕒 运行耗时：', 1)
         # 此处直接列举
         for nars_name, r in nars_results:
-            print(f'{nars_name} => {r.time_diff}', 2)
+            name = pad_display_spaces(nars_name, max_display_len)
+            print(f'{name} => {r.time_diff}', 2)
 
     # 返回 #
     return result

@@ -6,6 +6,8 @@
 
 from typing import Callable
 from toolchain import *
+from os import getcwd
+from util import *
 
 # * === 测试结果保存 === * #
 
@@ -34,6 +36,39 @@ TEST_RESULT_FILE_NAME: Callable = lambda: f'group_result-{time_stamp()}.test'
 '''
 
 # * === 文件路径 === * #
+
+
+def __ROOT() -> str:
+    '''自动获取并计算根路径
+    - 🎯功能分离，常量区保持「一个常量一行定义」
+    '''
+    root = getcwd().replace('\\', '/')
+    # # 自动修正根路径
+    # if 'test/' not in root:
+    # root += '/test/'
+    root += '/'
+    return root
+
+
+ROOT = __ROOT()
+'''文件夹的根路径
+- 🚩【2024-04-26 09:58:03】统一反斜杠「\」为正斜杠「/」
+'''
+
+EXECUTABLES_ROOT = ROOT + 'executables/'
+'''存放可执行文件的根路径'''
+
+BABELNAR_CLI = EXECUTABLES_ROOT + 'babelnar_cli.exe'
+'''BabelNAR CLI 本体路径'''
+
+CONFIG_ROOT = ROOT + 'config/'
+'''配置文件的根路径'''
+
+CONFIG_NAL = CONFIG_ROOT + 'test_nal/'
+'''存放NAL配置文件的根路径'''
+
+CONFIG_NAL_PRELUDE = CONFIG_ROOT + 'prelude_test.hjson'
+'''用于在BabelNAR CLI启动后预置NAL测试文件的配置（NAL测试环境）'''
 
 CONFIG_LAUNCH_OPENNARS_158 = CONFIG_ROOT + 'launch_opennars_158.hjson'
 '''用于在BabelNAR CLI启动OpenNARS 1.5.8的配置文件'''
