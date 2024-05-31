@@ -4,7 +4,7 @@
 
 
 from time import strftime, localtime
-from typing import Iterable, Iterator, List, Optional, TypeVar
+from typing import Callable, Iterable, Iterator, List, Optional, TypeVar
 
 UTF_8_SIG = b'\xEF\xBB\xBF'
 '''UTF8 BOM：明确标识一个文件是UTF-8编码
@@ -90,7 +90,7 @@ def is_same(iterable: Iterable) -> bool:
     - 🚩空迭代器⇒真
     '''
     iterator = iter(iterable)
-    try: # ! ❌is_empty会消耗掉迭代器
+    try:  # ! ❌is_empty会消耗掉迭代器
         first = next(iterator)
     except StopIteration:
         return True
@@ -158,3 +158,20 @@ def pad_display_spaces(s: str, max_num_display_chars: int, tail: bool = True) ->
     )
     # 用半角空格补全
     return s + pad if tail else pad + s
+
+
+def InputIterator(
+    prompt: str,
+    *,
+    end_condition: Callable[[str], bool] = is_empty,
+):
+    '''简单的用户输入迭代器
+    - 📌在迭代时请求用户输入
+    - 🚩默认为空字符串结束
+    '''
+    while True:
+        i = input(prompt)
+        if end_condition(i):
+            return
+        else:
+            yield i

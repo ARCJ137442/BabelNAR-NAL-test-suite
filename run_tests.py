@@ -199,6 +199,28 @@ GroupTestResultToShow = Dict[str, CrossTestResultToShow]
 '''分组测试的返回类型（展示用）'''
 
 
+def groupby_test(
+    test_files: List[TestFile] = ALL_TEST_FILES,
+    group_name: Callable[[TestFile], str] = default_group_name,
+) -> List[Tuple[str, List[TestFile]]]:
+    '''将测试按标准分组
+    - 🎯分「NAL层级」等标准，展示时可按照组别展示
+    '''
+    groups: Dict[str, List[TestFile]] = {}
+
+    # 按名称分组
+    for file in test_files:
+        name = group_name(file)
+        if name in groups:
+            groups[name].append(file)
+        else:
+            groups[name] = [file]
+
+    # 分组后排序
+    sorted_groups = sorted(groups.items(), key=lambda t: t[0])
+    return sorted_groups
+
+
 def group_test(
     nars_types: List[NARSType] = ALL_NARS_TYPES,
     test_files: List[TestFile] = ALL_TEST_FILES,
@@ -210,16 +232,6 @@ def group_test(
     '''分组测试
     - 🎯分「NAL层级」等标准，展示时可按照组别展示
     '''
-    groups: Dict[str, List[TestFile]] = {}
-
-    for file in test_files:
-        name = group_name(file)
-        if name in groups:
-            groups[name].append(file)
-        else:
-            groups[name] = [file]
-
-    sorted_groups = sorted(groups.items(), key=lambda t: t[0])
 
     # 分组开展测试
     return {
@@ -229,7 +241,7 @@ def group_test(
             verbose_on_success=verbose_on_success,
             verbose_on_fail=verbose_on_fail,
         )
-        for (name, files) in sorted_groups
+        for (name, files) in groupby_test(test_files, group_name)
     }
 
 
@@ -376,9 +388,22 @@ def store_group_test(group_results: GroupTestResult, file_root: str, file_name: 
 
 def main():
     '''主函数（仅直接执行时）'''
-    from time import time
 
     # 计时开始 #
+    result, total_time = main_test()
+
+    # 展示结果 #
+    main_show(result, total_time)
+
+    # 存储结果 #
+    main_store(result)
+
+    # 结束 #
+    exit(0)
+
+
+def main_test():
+    '''实际运行测试'''
     now = time()
 
     # 计算结果 #
@@ -388,10 +413,22 @@ def main():
     # 计算实际总耗时 #
     total_time = time() - now
 
-    # 展示结果 #
+    # 返回测试结果与总耗时
+    return result, total_time
+
+
+def main_store(result: GroupTestResult):
+    '''以默认配置保存某测试'''
+    file_root = constants.TEST_RESULT_FILE_ROOT
+    file_name = constants.TEST_RESULT_FILE_NAME()
+    '''文件名（不含扩展名）'''
+    store_group_test(result, file_root=file_root, file_name=file_name)
+
+
+def main_show(result: GroupTestResult, total_time: float):
+    '''展示所有测试'''
     print(f'所有NAL测试完毕，总耗时 {total_time:.2f} 秒。')
     for (group_name, results) in result.items():
-
         # 计算总耗时
         d_time = sum(
             result.time_diff
@@ -404,15 +441,6 @@ def main():
         # 展示
         name = f"测试组 {group_name}" if group_name else "所有NAL测试"
         print(f'  {name} 运行完毕，总运行耗时 {d_time:.2f} 秒：\n{table}')
-
-    # 存储结果 #
-    file_root = constants.TEST_RESULT_FILE_ROOT
-    file_name = constants.TEST_RESULT_FILE_NAME()
-    '''文件名（不含扩展名）'''
-    store_group_test(result, file_root=file_root, file_name=file_name)
-
-    # 结束 #
-    exit(0)
 
 
 if __name__ == '__main__':
