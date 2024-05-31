@@ -35,11 +35,14 @@ TEST_RESULT_FILE_NAME: Callable = lambda: f'group_result-{time_stamp()}.test'
 
 # * === 文件路径 === * #
 
-CONFIG_LAUNCH_OPENNARS_15T = CONFIG_ROOT + 'launch_opennars_15T.hjson'
-'''用于在BabelNAR CLI启动OpenNARS 1.5.T的配置文件'''
-
 CONFIG_LAUNCH_OPENNARS_158 = CONFIG_ROOT + 'launch_opennars_158.hjson'
 '''用于在BabelNAR CLI启动OpenNARS 1.5.8的配置文件'''
+
+CONFIG_LAUNCH_OPENNARS_312 = CONFIG_ROOT + 'launch_opennars_312.hjson'
+'''用于在BabelNAR CLI启动OpenNARS 3.1.2的配置文件'''
+
+CONFIG_LAUNCH_OPENNARS_304 = CONFIG_ROOT + 'launch_opennars_304.hjson'
+'''用于在BabelNAR CLI启动OpenNARS 3.0.4的配置文件'''
 
 # * === NARS类型 === * #
 
@@ -55,13 +58,21 @@ NARS_158 = NARSType(
   * 📄OpenNARS 3.x/1.5.x GUI程序
 '''
 
-NARS_15T = NARSType(
-    'OpenNARS 1.5.T',
-    launch_config_path=CONFIG_LAUNCH_OPENNARS_15T,
-    # * 🚩目前定在0.8s到1.6s之间，每次失败增加0.2s再试
-    global_kill_java_timeouts=f_range(0.8, 1.6, 0.2)
+NARS_304 = NARSType(
+    'OpenNARS 3.0.4',
+    launch_config_path=CONFIG_LAUNCH_OPENNARS_304,
+    # * 🚩目前定在0.8s到2.0s之间，每次失败增加0.4s再试
+    global_kill_java_timeouts=f_range(0.8, 2.0, 0.4)
 )
-'''配置/OpenNARS 1.5.8 改版'''
+'''配置/OpenNARS 3.0.4'''
+
+NARS_312 = NARSType(
+    'OpenNARS 3.1.2',
+    launch_config_path=CONFIG_LAUNCH_OPENNARS_312,
+    # * 🚩目前定在0.8s到2.0s之间，每次失败增加0.4s再试
+    global_kill_java_timeouts=f_range(0.8, 2.0, 0.4)
+)
+'''配置/OpenNARS 3.1.2'''
 
 # * === NAL测试文件 === * #
 
@@ -445,7 +456,6 @@ if 测试区域开始 := True:  # ! ↑ 这条线上不测试 | 这条线下开�
         TEST_SINGLE_6_uncle = TestFile('6.uncle', 'NAL-6.uncle')
         '''单步推理/6.uncle'''
 
-if 测试区域结束 := False:  # ! ↓分界线之下均不开始测试
     # * NAL-7 * #
 
     TEST_SINGLE_7_0 = TestFile('7.0', 'NAL-7.0 时间演绎举例')
@@ -457,4 +467,5 @@ if 测试区域结束 := False:  # ! ↓分界线之下均不开始测试
     # * ✅【2024-05-14 22:14:34】↑在OpenNARS 3.1.2中成功
 
     # ! 📝【2024-05-14 21:30:09】NAL-8、NAL-9 均在OpenNARS 3.1.2上表现不佳——未能完全实现功能
+if 测试区域结束 := False:  # ! ↓分界线之下均不开始测试
     pass

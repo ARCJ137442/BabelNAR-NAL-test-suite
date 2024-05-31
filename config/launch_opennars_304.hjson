@@ -1,8 +1,8 @@
 #hjson
-// OpenNARS 1.5.8
-// * 🎯配置启动OpenNARS 1.5.8
+// OpenNARS 3.0.4
+// * 🎯配置启动OpenNARS 3.0.4
 {
-    description: "OpenNARS 1.5.8"
+    description: "OpenNARS 3.0.4"
     // 转译器
     translators: "opennars"
     // 启动命令
@@ -16,7 +16,7 @@
             // 启动jar包
             "-jar"
             // * 🚩【2024-05-09 09:58:35】Java启动失败会直接导致程序退出，不是卡死堵塞的原因
-            ./executables/opennars-158-shell.jar
+            ./executables/opennars-304-T-modified.jar
         ]
         // 启动时的工作目录
         // * 回溯路径：config(`./`) => babelnar => opennars-158-shell.jar
