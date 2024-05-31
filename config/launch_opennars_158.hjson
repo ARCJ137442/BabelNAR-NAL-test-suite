@@ -16,10 +16,10 @@
             // 启动jar包
             "-jar"
             // * 🚩【2024-05-09 09:58:35】Java启动失败会直接导致程序退出，不是卡死堵塞的原因
-            ./executables/opennars-158-shell.jar
+            ./executables/opennars-158-original.jar
         ]
         // 启动时的工作目录
-        // * 回溯路径：config(`./`) => babelnar => opennars-158-shell.jar
+        // * 回溯路径：config(`./`) => / => opennars-158-shell.jar
         currentDir: ./../
     }
     // 自动重启（后续会被覆盖）
