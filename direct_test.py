@@ -1,3 +1,8 @@
+'''Direct Test 直接测试
+- 🎯精确指定测试范围，不修改`constants.py`运行少量测试
+- 📌基于「测试运行」系列方法
+'''
+
 from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, group_test, main_show, main_store
 from toolchain import *
 from util import *
