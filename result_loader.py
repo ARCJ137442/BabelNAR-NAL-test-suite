@@ -72,7 +72,7 @@ def load_json_object(path: str) -> dict:
 def load_group_results(path: str) -> GroupTestResultToShow:
     '''从JSON文件路径路径加载测试结果'''
     # 加载JSON对象
-    json = load_json_object(path)
+    json = load_json_object(path.strip())
     return load_group_results_json(json)
 
 

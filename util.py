@@ -93,10 +93,25 @@ def is_same(iterable: Iterable) -> bool:
     try:  # ! ❌is_empty会消耗掉迭代器
         first = next(iterator)
     except StopIteration:
-        return True
+        return True  # 空⇒真
 
     # 判断剩余元素剩余元素
     return all(t == first for t in iterator)
+
+
+def not_same(iterable: Iterable) -> bool:
+    '''判断一个可迭代对象内含元素是否不同
+    - 🚩空迭代器⇒假
+    - 📌实质上就是`is_same`的反向
+    '''
+    iterator = iter(iterable)
+    try:  # ! ❌is_empty会消耗掉迭代器
+        first = next(iterator)
+    except StopIteration:
+        return False  # 空⇒假
+
+    # 判断剩余元素剩余元素
+    return any(t != first for t in iterator)
 
 
 char = str
