@@ -14,7 +14,7 @@
 $0.80;0.80;0.95$ <{Tweety} --> {Birdie}>. %1.00;0.90%
 
 ' * 💡「Twetty」与「Birdle」相似
-''expect-cycle(10,1,0.1s): OUT <{Birdie} <-> {Tweety}>. %1.00;0.90%
+''expect-cycle(20,2,0.1s): OUT <{Birdie} <-> {Tweety}>. %1.00;0.90%
 
 ' * 🔚退出测试
 ''terminate(if-no-user)
