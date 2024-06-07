@@ -1,0 +1,26 @@
+' file: 3.0.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound composition,two premises 双前提组合
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭天鹅会游泳
+$0.80;0.80;0.95$ <swan --> swimmer>. %0.90;0.90%
+
+' * 💭天鹅是一种鸟
+$0.80;0.80;0.95$ <swan --> bird>. %0.80;0.90%
+
+' * 💡天鹅是一种鸟 或 会游泳的
+''expect-cycle(10,1,0.1s): OUT <swan --> (|,bird,swimmer)>. %0.98;0.81%
+
+' * 💡天鹅是一种会游泳的鸟
+''expect-cycle(10,1,0.1s): OUT <swan --> (&,bird,swimmer)>. %0.72;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

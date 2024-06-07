@@ -1,0 +1,23 @@
+' file: 5.15.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound decomposition, two premises 双前提合取分解
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭并非 若 知更鸟是一种鸟 则 知更鸟是一种动物 且 知更鸟会飞
+$0.80;0.80;0.95$ <<robin --> bird> ==> (&&,<robin --> animal>,<robin --> [flying]>)>. %0.00;0.90%
+
+' * 💭若 知更鸟是一种鸟 则 知更鸟会飞
+$0.80;0.80;0.95$ <<robin --> bird> ==> <robin --> [flying]>>. %1.00;0.90%
+
+' * 💡不太可能 若 知更鸟是一种鸟 则 知更鸟是一种动物
+''expect-cycle(10,1,0.1s): OUT <<robin --> bird> ==> <robin --> animal>>. %0.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

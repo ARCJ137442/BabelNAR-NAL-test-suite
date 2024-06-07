@@ -1,0 +1,23 @@
+' file: 5.8.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' comparison 高阶比较同后项
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭通常来说 若 知更鸟是一种鸟 则 知更鸟是一种动物
+$0.80;0.80;0.95$ <<robin --> bird> ==> <robin --> animal>>. %0.70;0.90%
+
+' * 💭若 知更鸟会飞 则 知更鸟是一种动物
+$0.80;0.80;0.95$ <<robin --> [flying]> ==> <robin --> animal>>. %1.00;0.90%
+
+' * 💡也许 知更鸟会飞 当且仅当 知更鸟是一种鸟
+''expect-cycle(20,2,0.1s): OUT <<robin --> [flying]> <=> <robin --> bird>>. %0.70;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

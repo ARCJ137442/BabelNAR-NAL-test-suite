@@ -1,0 +1,23 @@
+' file: 2.3.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' comparison 比较同后项
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭运动是一种比赛
+$0.80;0.80;0.95$ <sport --> competition>. %1.00;0.90%
+
+' * 💭下棋是一种比赛
+$0.80;0.80;0.95$ <chess --> competition>. %0.90;0.90%
+
+' * 💡下棋可能与运动相似
+''expect-cycle(10,1,0.1s): OUT <chess <-> sport>. %0.90;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

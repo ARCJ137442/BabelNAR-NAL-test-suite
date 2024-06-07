@@ -1,0 +1,23 @@
+' file: 6.7.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' variable elimination 消去+分离前推后
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 某物是一种鸟 则 它是一种动物
+$0.80;0.80;0.95$ <<$x --> bird> ==> <$x --> animal>>. %1.00;0.90%
+
+' * 💭知更鸟是一种鸟
+$0.80;0.80;0.95$ <robin --> bird>. %1.00;0.90%
+
+' * 💡知更鸟是一种动物
+''expect-cycle(10,1,0.1s): OUT <robin --> animal>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

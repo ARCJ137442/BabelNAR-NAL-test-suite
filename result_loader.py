@@ -165,8 +165,11 @@ def query_single_test(results: GroupTestResultToShow, query: str) -> None:
     print(f'未找到测试 {repr(query)}！')
 
 
-def show_single_test(nars_results: List[Tuple[str, str, str, TestResult]]) -> None:
-    '''展示单个「测试用例」的结果'''
+def show_single_test(nars_results: List[Tuple[str, str, str, TestResult]], n_paging: int = 100) -> None:
+    '''展示单个「测试用例」的结果
+    - 🚩【2024-06-07 20:01:32】现在对过长的输出采用「分页翻页」的方式
+        - 默认每100行请求翻页
+    '''
     print()
     while True:
         try:
@@ -175,7 +178,7 @@ def show_single_test(nars_results: List[Tuple[str, str, str, TestResult]]) -> No
             for group_name, test_name, nars_name, test_result in nars_results:
                 if nars_name == query_name or query_name in nars_name:
                     print(f'\n# {test_name} @ {nars_name}')
-                    show_result(test_result, verbose=True)
+                    show_result(test_result, verbose=True, n_paging=n_paging)
                     print()
                     not_found = False
             if not_found:

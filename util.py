@@ -189,3 +189,23 @@ def InputIterator(
             return
         else:
             yield i
+
+
+def trim_left(s: str, prefix: str) -> str:
+    '''左侧整体性裁剪
+    - 📄trim_left('13223', '23') => '132'
+    - ⚠️不同于trim：会整个整个裁剪
+    '''
+    while s.startswith(prefix):
+        s = s[len(prefix):]
+    return s
+
+
+def trim_right(s: str, suffix: str) -> str:
+    '''右侧整体性裁剪
+    - 📄trim_right('13123', '13') => '123'
+    - ⚠️不同于trim：会整个整个裁剪
+    '''
+    while s.endswith(suffix):
+        s = s[:-len(suffix)]
+    return s
