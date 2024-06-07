@@ -3,8 +3,7 @@
 - 📌基于「测试运行」系列方法
 '''
 
-from diff_analyze import show_group_diffs
-from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, group_test, show_test_result, main_store, main_test
+from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, show_test_result, main_store, main_test
 from toolchain import *
 from util import *
 
@@ -14,9 +13,33 @@ def query_hit(file: TestFile, query: str) -> bool:
     return query.lower() in file.name.lower()
 
 
+def find_tests_in_constants(query: str) -> List[TestFile]:
+    return collect(filter(lambda file: query_hit(file, query), ALL_TEST_FILES))
+
+
+def find_tests_in_file(query_file_path: str) -> List[TestFile]:
+    from os.path import isfile
+    file_path = (
+        query_file_path
+        # * 🚩统一斜杠
+        .replace('\\', '/')
+        # * 🚩删去前后空格、引号
+        .strip(' &\\/"\'')
+    )
+    if isfile(file_path) and file_path.endswith('.nal'):
+        return [TestFile.from_file_path(file_path)]
+    else:
+        return []
+
+
 def find_tests(query: str) -> List[TestFile]:
     '''根据一个关键词搜索测试文件（结果可能为空）'''
-    return collect(filter(lambda file: query_hit(file, query), ALL_TEST_FILES))
+    return (
+        # * 🚩测试名是一个路径⇒按照路径查找文件，自动生成临时「测试文件」
+        find_tests_in_file(query)
+        if '/' in query or '\\' in query else
+        find_tests_in_constants(query)
+    )
 
 
 def query_tests(queries: Iterable[str], print_feedback: bool = True) -> Optional[List[TestFile]]:
@@ -93,7 +116,7 @@ def main():
 
     try:  # 不断执行单个测试
         while True:
-            inputs = InputIterator('请输入要测试的测试用例（输入空行以启动）: ')
+            inputs = InputIterator('请输入要测试的测试用例（或输入已配置的`.nal`文件路径；输入空行以启动）: ')
             tests = query_tests(inputs)
             main_one(tests)
             # 空行分隔

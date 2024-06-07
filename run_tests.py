@@ -69,12 +69,12 @@ def perform_cross_tests(
             print(
                 f'✅ {nars_type.name} @ {test_file.name} in {result.success_cycles} steps')
             if verbose_on_success:
-                show_result(result, verbose=True)
+                show_result(result, verbose=True, n_paging=0)  # 不要分页，持续测试
         # 失败且开启了「失败时打印详细日志」 ⇒ 打印详细日志
         else:
             print(f'❌ {nars_type.name} @ {test_file.name}')
             if verbose_on_fail:
-                show_result(result, verbose=True)
+                show_result(result, verbose=True, n_paging=0)  # 不要分页，持续测试
         # print(f'JSON: {result.to_json()}')
         # 返回
         return result

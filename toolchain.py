@@ -376,11 +376,32 @@ class TestFile:
         self.name = name if name else 'NAL测试'
         self.local_kill_java_timeouts = local_kill_java_timeouts
 
+    @staticmethod
+    def from_file_path(
+        file_path: str,
+        *,
+        local_kill_java_timeouts: KillJavaTimeouts = None
+    ) -> 'TestFile':
+        '''从文件路径获取测试文件'''
+        from os.path import basename
+        nal_index_name = (
+            '.'.join(basename(file_path).split('.')[:-1])
+            if '.' in file_path
+            else file_path
+        )
+        name = f'NAL测试 {nal_index_name}'
+        return TestFile(
+            nal_index_name,
+            name,
+            local_kill_java_timeouts=local_kill_java_timeouts
+        )
+
     def nal_level(self) -> str:
         '''获取NAL层级
         - 🎯后续按层级分组测试
         - 🚩直接按中间的「.」拆分取首个
         - 📄"1.0" => "1"
+        - 📄"123" => "123"
         '''
         return self.nal_index_name.split('.')[0]
 
@@ -629,8 +650,9 @@ def configure_io_encoding():
     stdout.reconfigure(encoding='utf-8')  # type: ignore
 
 
-def show_result(result: TestResult, verbose: bool = False, user_interactive: bool = False):
+def show_result(result: TestResult, verbose: bool = False, user_interactive: bool = False, n_paging: int = 0):
     '''展示NAL测试结果
+    - 🚩【2024-06-07 20:01:32】现在对过长的输出采用「分页翻页」的方式
 
     Args:
         result(TestResult): 测试结果
@@ -646,6 +668,28 @@ def show_result(result: TestResult, verbose: bool = False, user_interactive: boo
         if user_interactive:
             input('按下回车键查看详细结果：')
         if result.output_std:
-            print(f'标准输出 = """\n{result.output_std.strip()}\n"""')
+            print(f'标准输出 = """\n')
+            _show_output(result.output_std.strip(), n_paging=n_paging)
+            print('\n"""')
         if result.output_err:
-            print(f'错误输出 = """\n{result.output_err.strip()}\n"""')
+            print(f'错误输出 = """\n')
+            _show_output(result.output_err.strip(), n_paging=n_paging)
+            print('\n"""')
+
+
+def _show_output(output: str, n_paging: int = 100):
+    '''展示输出
+    - 📝【2024-06-07 20:17:43】Python的print对长字符串会限制输出长度
+    - 🎯展示长字符串输出，当行数过多时分页呈现
+    - 📜0表示不分页
+    '''
+    lines = output.splitlines()
+    paging_counter = 0
+    n_lines = len(lines)
+    for i, line in enumerate(lines):
+        paging_counter += 1
+        if paging_counter == n_paging:  # `0`表示不分页
+            paging_counter = 0
+            input(
+                f'---- 第 {(i+1)//n_paging}/{n_lines//n_paging} 页 按下回车键以继续({i+1}/{len(lines)}) ----')
+        print(line)
