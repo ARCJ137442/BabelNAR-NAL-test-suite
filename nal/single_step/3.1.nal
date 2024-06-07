@@ -1,0 +1,26 @@
+' file: 3.1.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound composition,two premises 双前提同谓词组合
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭运动是一种比赛
+$0.80;0.80;0.95$ <sport --> competition>. %0.90;0.90%
+
+' * 💭棋类是一种比赛
+$0.80;0.80;0.95$ <chess --> competition>. %0.80;0.90%
+
+' * 💡若有东西是棋类与运动之一，那它是一种比赛
+''expect-cycle(10,1,0.1s): OUT <(|,chess,sport) --> competition>. %0.72;0.81%
+
+' * 💡若有东西既是棋类又是运动，那它是一种比赛
+''expect-cycle(10,1,0.1s): OUT <(&,chess,sport) --> competition>. %0.98;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

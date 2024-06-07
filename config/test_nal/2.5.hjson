@@ -5,6 +5,6 @@
 {
     preludeNAL: {
         // 预置的NAL测试文件（相对配置文件自身）
-        file: ./../../nal/single_step/nal2.5.nal
+        file: ./../../nal/single_step/2.5.nal
     }
 }

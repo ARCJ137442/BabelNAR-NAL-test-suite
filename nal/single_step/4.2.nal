@@ -1,0 +1,23 @@
+' file: 4.2.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' structural transformation 外延像转积2
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.05秒，给启动留足时间
+''sleep: 0.05s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭碱 是 可以和酸发生反应的
+$0.80;0.80;0.95$ <base --> (/,reaction,acid,_)>. %1.00;0.90%
+
+' * 💡酸 是 可以和碱发生反应的
+''expect-cycle(10,1,0.1s): OUT <acid --> (/,reaction,_,base)>. %1.00;0.90%
+
+' * 💡酸和碱可以发生反应
+''expect-cycle(10,1,0.1s): OUT <(*,acid,base) --> reaction>. %1.00;0.90%
+
+' * 🔚退出测试
+''terminate(if-no-user)

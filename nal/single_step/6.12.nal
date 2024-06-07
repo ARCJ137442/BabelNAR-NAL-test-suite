@@ -1,0 +1,23 @@
+' file: 6.12.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' variable elimination 消去+条件演绎消条件
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 某物会飞 且 它会叫 且 它吃虫子 则 它是一种鸟
+$0.80;0.80;0.95$ <(&&,<$x --> flyer>,<$x --> [chirping]>, <(*, $x, worms) --> food>) ==> <$x --> bird>>. %1.00;0.90%
+
+' * 💭「Twetty」会飞
+$0.80;0.80;0.95$ <{Tweety} --> flyer>. %1.00;0.90%
+
+' * 💡若 「Twetty」会叫 且 「Twetty」吃虫子 则 「Twetty」是一种鸟
+''expect-cycle(30,3,0.1s): OUT <(&&,<(*,{Tweety},worms) --> food>,<{Tweety} --> [chirping]>) ==> <{Tweety} --> bird>>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

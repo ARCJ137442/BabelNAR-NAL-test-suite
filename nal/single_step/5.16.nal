@@ -1,0 +1,23 @@
+' file: 5.16.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound decomposition, two premises 单合取条件消解
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭知更鸟不可能既会飞又会游泳
+$0.80;0.80;0.95$ (&&,<robin --> [flying]>,<robin --> swimmer>). %0.00;0.90%
+
+' * 💭知更鸟会飞
+$0.80;0.80;0.95$ <robin --> [flying]>. %1.00;0.90%
+
+' * 💡知更鸟不会游泳
+''expect-cycle(10,1,0.1s): OUT <robin --> swimmer>. %0.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

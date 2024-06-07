@@ -1,0 +1,20 @@
+' file: 3.13.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' compound decomposition,one premise 单句分解外延差
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭知更鸟是一种不会游泳的鸟
+$0.80;0.80;0.95$ <robin --> (-,bird,swimmer)>. %0.90;0.90%
+
+' * 💡知更鸟是一种鸟
+''expect-cycle(80,4,0.1s): OUT <robin --> bird>. %0.90;0.73%
+
+' * 🔚退出测试
+''terminate(if-no-user)

@@ -1,0 +1,23 @@
+' file: 5.26.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' conditional abduction 单条件归因取条件
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 知更鸟会飞 则 知更鸟是一种鸟
+$0.80;0.80;0.95$ <<robin --> [flying]> ==> <robin --> bird>>. %1.00;0.90%
+
+' * 💭若 知更鸟会游泳 且 知更鸟会飞 则 知更鸟是一种鸟
+$0.80;0.80;0.95$ <(&&,<robin --> swimmer>,<robin --> [flying]>) ==> <robin --> bird>>. %1.00;0.90%
+
+' * 💡也许 知更鸟会游泳
+''expect-cycle(20,2,0.1s): OUT <robin --> swimmer>. %1.00;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)

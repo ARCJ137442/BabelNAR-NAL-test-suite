@@ -1,0 +1,23 @@
+' file: 5.23.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' conditional deduction 条件演绎消合取
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 知更鸟会飞 且 知更鸟有翅膀 则 知更鸟是一种鸟
+$0.80;0.80;0.95$ <(&&,<robin --> [flying]>,<robin --> [with_wings]>) ==> <robin --> bird>>. %1.00;0.90%
+
+' * 💭知更鸟会飞
+$0.80;0.80;0.95$ <robin --> [flying]>. %1.00;0.90%
+
+' * 💡若 知更鸟有翅膀 则 知更鸟是一种鸟
+''expect-cycle(10,1,0.1s): OUT <<robin --> [with_wings]> ==> <robin --> bird>>. %1.00;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

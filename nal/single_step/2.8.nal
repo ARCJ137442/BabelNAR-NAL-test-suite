@@ -1,0 +1,23 @@
+' file: 2.8.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' structure transformation 结构变换套内涵
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭明智和聪明很相似
+$0.80;0.80;0.95$ <bright <-> smart>. %0.90;0.90%
+
+' * ❓明智的是否是聪明的
+$0.90;0.80;1.00$ <[smart] --> [bright]>?
+
+' * 💡明智的就是聪明的
+''expect-cycle(200,20,0.1s): ANSWER <[smart] --> [bright]>. %0.90;0.81%
+
+' * 🔚退出测试
+''terminate(if-no-user)

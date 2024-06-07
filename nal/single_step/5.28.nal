@@ -1,0 +1,26 @@
+' file: 5.28.nal
+' Author: OpenNARS Team
+' Editor: @ARCJ137442
+' conditional abduction 双条件归因消条件
+' 📝使用`'//`对指令进行注释
+
+' * 🕒延迟0.2秒，给启动留足时间
+''sleep: 0.2s
+
+' * 🔊允许所有导出结论被展示（用于OpenNARS）
+'''VOL 100
+
+' * 💭若 知更鸟会飞 且 知更鸟有翅膀 则 知更鸟有生命
+$0.80;0.80;0.95$ <(&&,<robin --> [flying]>,<robin --> [with_wings]>) ==> <robin --> [living]>>. %0.90;0.90%
+
+' * 💭若 知更鸟会飞 且 知更鸟是一种鸟 则 知更鸟有生命
+$0.80;0.80;0.95$ <(&&,<robin --> [flying]>,<robin --> bird>) ==> <robin --> [living]>>. %1.00;0.90%
+
+' * 💡也许 若 知更鸟是一种鸟 则 知更鸟有翅膀
+''expect-cycle(20,2,0.1s): OUT <<robin --> bird> ==> <robin --> [with_wings]>>. %1.00;0.42%
+
+' * 💡也许 若 知更鸟有翅膀 则 知更鸟是一种鸟
+''expect-cycle(20,2,0.1s): OUT <<robin --> [with_wings]> ==> <robin --> bird>>. %0.90;0.45%
+
+' * 🔚退出测试
+''terminate(if-no-user)
