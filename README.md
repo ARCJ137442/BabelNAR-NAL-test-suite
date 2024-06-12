@@ -5,7 +5,8 @@
 - 📌最小Python版本：3.8.10（其它版本尚未验证）
 - 💻操作系统：Windows（其它系统尚未验证）
 - 🗺️目前所支持NAL层级：NAL-1 ~ NAL-6
-- 🕒最后更新时间：【2024-05-31 17:37:49】
+- 💬程序交互语言：简体中文
+- 🕒最后更新时间：【2024-06-12 20:03:19】
 
 ## 目录
 
@@ -20,16 +21,44 @@
 
 ### 启动
 
-目前程序的主要测试入口为`run_tests.py`，可通过以下命令运行所有单元测试：
+最新测试入口为`main.py`，可在终端中运行如下命令：
+
+```shell
+python main.py
+```
+
+该入口可调用其它测试用脚本，包括但不限于：
+
+#### 批量测试
+
+直接运行所有测试用例
 
 ```shell
 python run_tests.py
 ```
 
-若需运行指定测试用例，可运行`direct_test.py`：
+#### 定点测试
+
+运行指定测试用例，带有用户交互功能
 
 ```shell
 python direct_test.py
+```
+
+#### 测试结果查看器
+
+从指定的测试结果文件(JSON)中查看测试结果
+
+```shell
+python result_loader.py
+```
+
+#### 测试结果差异分析
+
+从指定的测试结果文件(JSON)中加载测试结果，分析不同推理器的测试结果差异
+
+```shell
+python diff_analyze.py
 ```
 
 #### 调试（VSCode）
@@ -39,6 +68,13 @@ python direct_test.py
 ```json
 {
     "configurations": [
+        {
+            "name": "测试套件 主入口",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal"
+        },
         {
             "name": "运行分组NAL测试",
             "type": "debugpy",
