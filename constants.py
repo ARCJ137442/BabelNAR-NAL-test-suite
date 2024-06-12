@@ -9,6 +9,12 @@ from toolchain import *
 from os import getcwd
 from util import *
 
+# * === 测试套件元信息 == * #
+TEST_SUITE_PROGRAM_NAME = 'BabelNAR CLI 测试套件'
+TEST_SUITE_PROGRAM_DESCRIPTION = '''
+提示：使用 Ctrl+C 从已启动的子程序中退出，或在未启动子程序时退出主程序
+'''.strip()
+
 # * === 测试结果保存 === * #
 
 RESULT_SAVING_ENCODING = 'utf-8'

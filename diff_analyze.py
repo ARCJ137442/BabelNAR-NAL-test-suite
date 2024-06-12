@@ -163,8 +163,8 @@ def main_path(path: str) -> None:
 
 def main():
     '''主函数'''
-    print('==== 测试结果加载器 ====')
-    print('提示：使用Ctrl+C退出各级查询')
+    print('==== 测试结果 差异分析 ====')
+    print('提示：使用 Ctrl+C 退出各级查询')
     while True:
         try:
             # 获取测试结果路径

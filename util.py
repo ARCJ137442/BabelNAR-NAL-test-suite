@@ -4,7 +4,7 @@
 
 
 from time import strftime, localtime
-from typing import Callable, Iterable, Iterator, List, Optional, TypeVar
+from typing import Any, Callable, Iterable, Iterator, List, Optional, TypeVar
 
 UTF_8_SIG = b'\xEF\xBB\xBF'
 '''UTF8 BOM：明确标识一个文件是UTF-8编码
@@ -114,6 +114,16 @@ def not_same(iterable: Iterable) -> bool:
     return any(t != first for t in iterator)
 
 
+def find_first(iterable: Iterable[__T], predicate: Callable[[__T], bool]) -> Optional[__T]:
+    '''查找第一个满足条件的元素
+    - 🚩直接遍历判断
+    '''
+    for t in iterable:
+        if predicate(t):
+            return t
+    return None
+
+
 char = str
 '''字符类型'''
 
@@ -209,3 +219,17 @@ def trim_right(s: str, suffix: str) -> str:
     while s.endswith(suffix):
         s = s[:-len(suffix)]
     return s
+
+
+VoidFunction = Callable[[], None]
+'''无参数、无返回值的函数类型'''
+
+
+def void(f: Callable) -> VoidFunction:
+    '''将一个函数转换为无返回值的函数'''
+    return lambda: (None, f())[0]
+
+
+def is_in_or_contains(s1: Any, s2: Any):
+    '''判断两个对象是否包含或被包含'''
+    return s1 in s2 or s2 in s1
