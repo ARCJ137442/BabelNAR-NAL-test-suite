@@ -17,7 +17,7 @@ $0.80;0.80;0.95$ <swan --> bird>. %0.90;0.90%
 $0.90;0.80;1.00$ <bird <-> swan>?
 
 ' * 💡鸟和天鹅可能相似
-''expect-cycle(10,1,0.1s): ANSWER <bird <-> swan>. %0.90;0.47%
+''expect-cycle(20,2,0.1s): ANSWER <bird <-> swan>. %0.90;0.47%
 
 ' * 🔚退出测试
 ''terminate(if-no-user)

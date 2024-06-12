@@ -17,7 +17,7 @@ $0.80;0.80;0.95$ <(--,<robin --> bird>) ==> <robin --> [flying]>>. %0.10;0.90%
 $0.90;0.80;1.00$ <(--,<robin --> [flying]>) ==> <robin --> bird>>?
 
 ' * 💡或许不太可能的是 若 知更鸟不会飞 则 知更鸟是一种鸟
-''expect-cycle(100,10,0.1s): ANSWER <(--,<robin --> [flying]>) ==> <robin --> bird>>. %0.00;0.45%
+''expect-cycle(60,6,0.1s): ANSWER <(--,<robin --> [flying]>) ==> <robin --> bird>>. %0.00;0.45%
 
 ' * 🔚退出测试
 ''terminate(if-no-user)
