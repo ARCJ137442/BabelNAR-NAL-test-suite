@@ -403,9 +403,6 @@ def main():
     # 存储结果 #
     main_store(result)
 
-    # 结束 #
-    exit(0)
-
 
 def main_test(
     nars_types: List[NARSType] = ALL_NARS_TYPES,
