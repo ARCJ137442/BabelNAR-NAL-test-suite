@@ -213,7 +213,10 @@ def main_one(nars_types: Optional[List[NARSType]], tests: Optional[List[TestFile
     results, total_time = main_test(nars_types=nars_types, test_files=tests)
 
     # 展示结果 #
-    show_test_result(results, total_time)
+    show_test_result(
+        results, total_time,
+        show_diff=len(nars_types) > 1  # 只在2个以上推理器时才分析差异
+    )
 
     # 询问是否保存测试结果
     if input('是否保存结果？（非空→保存，空行→不保存）：'):
