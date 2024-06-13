@@ -394,7 +394,8 @@ if 测试区域开始 := True:  # ! ↑ 这条线上不测试 | 这条线下开�
     TEST_SINGLE_6_1 = TestFile('6.1', 'NAL-6.1 统一+演绎举例')
     '''单步推理/6.1 统一+演绎举例'''
 
-    TEST_SINGLE_6_2 = TestFile('6.2', 'NAL-6.2 统一+与或归纳等价')
+    TEST_SINGLE_6_2 = TestFile('6.2', 'NAL-6.2 统一+与或归纳等价',
+                               local_kill_java_timeouts=f_range(1.2, 2.0, 0.4))
     '''单步推理/6.2 统一+与或归纳等价'''
 
     TEST_SINGLE_6_3 = TestFile('6.3', 'NAL-6.3 统一+与或归因等价')
