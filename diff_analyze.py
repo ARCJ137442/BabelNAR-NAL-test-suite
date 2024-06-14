@@ -49,12 +49,18 @@ def groupby_nars_test(results: CrossTestResultToShow) -> GroupedResultByNARS:
     return l
 
 
-def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, indent=' '*4) -> str:
-    '''对比单个测试中不同NARS的表现差异'''
+def nars_diff_one(
+        nars_results: List[Tuple[str, TestResult]],
+        show_level: int,
+        indent=' '*4) -> Tuple[str, int]:
+    '''对比单个测试中不同NARS的表现差异
+    * 🚩返回(差异字符串, 差异最小级别)
+        - 没有明确的「差异最小级别」⇒-1
+    '''
     result = ''
 
     if is_empty(nars_results):  # 空值⇒无差异
-        return result
+        return result, -1
 
     def print(obj='', n_indent=0, end='\n'):
         nonlocal result, indent
@@ -63,10 +69,12 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
     # 分析 & 追加 #
     max_display_len = max(len_display(nars_name)
                           for nars_name, _ in nars_results)
+    diff_level = -1
     # 1. 部分成功⇒展示「成功/失败」的差异
     if show_level > 0 and not_same(
             r.success
             for _, r in nars_results):
+        diff_level = 1
         print('- ⚠️ 部分成功：', 1)
         for nars_name, r in nars_results:
             name = pad_display_spaces(nars_name, max_display_len)
@@ -76,6 +84,7 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
     elif show_level > 1 and not_same(
             r.success_cycles  # 📝Python对数组的`==`判等是按值判等
             for _, r in nars_results):
+        diff_level = 2
         print(f'- ℹ️ 所用步数：', 1)
         # 此处直接列举
         for nars_name, r in nars_results:
@@ -85,6 +94,7 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
     elif show_level > 2 and not_same(
             r.time_diff
             for _, r in nars_results):
+        diff_level = 3
         print(f'- 🕒 运行耗时：', 1)
         # 此处直接列举
         for nars_name, r in nars_results:
@@ -92,12 +102,13 @@ def nars_diff_one(nars_results: List[Tuple[str, TestResult]], show_level: int, i
             print(f'{name} => {r.time_diff}', 2)
 
     # 返回 #
-    return result
+    return result, diff_level
 
 
-def nars_diff(results: CrossTestResultToShow, show_level: int) -> str:
+def nars_diff(results: CrossTestResultToShow, show_level: int) -> Tuple[str, int]:
     '''呈现交叉测试结果
-    - 🚩返回交叉测试的结果，不产生副作用
+    * 🚩返回(交叉测试总表, 差异最小级别)，不产生副作用
+        - 没有明确的「差异最小级别」⇒-1
     '''
 
     result = ''
@@ -110,14 +121,16 @@ def nars_diff(results: CrossTestResultToShow, show_level: int) -> str:
     grouped = groupby_nars_test(results)
 
     # 逐个测试追加
+    diff_levels = []
     for test, nars_results in grouped:
-        diff = nars_diff_one(nars_results, show_level)
+        diff, diff_level = nars_diff_one(nars_results, show_level)
+        diff_levels.append(diff_level)
         # 若有内容⇒追加标题并呈现
         if diff:
             print(f'- 测试 {test}\n{diff}', end='')
 
     # 返回
-    return result
+    return result, min(diff_levels)
 
 
 def request_show_level() -> int:
@@ -129,18 +142,23 @@ def request_show_level() -> int:
             print('输入错误！请重新输入！')
 
 
-def show_group_diffs(results: Union[GroupTestResult, GroupTestResultToShow], show_level: Optional[int] = None) -> None:
+def show_group_diffs(
+        results: Union[GroupTestResult, GroupTestResultToShow],
+        show_level: Optional[int] = None,
+        alert_max_level: Optional[int] = None) -> None:
     '''展示单个解析好了的「分组测试结果」'''
 
     # 未指定「对比等级」⇒靠用户输入请求
     level = show_level if show_level else request_show_level()
 
-    # 逐组打印测试结果
+    # 逐组分析并打印测试结果
     print()
+    min_diff_level = 0xffffff
     for group_name, cross_result in results.items():
         # 计算结果
         group_result = result_to_show(cross_result)
-        table = nars_diff(group_result, level)
+        table, diff_level = nars_diff(group_result, level)
+        min_diff_level = min(min_diff_level, diff_level)
         # 打印结果
         if table.strip():
             print(f'# 组名 {group_name}\n\n{table}')
@@ -148,7 +166,34 @@ def show_group_diffs(results: Union[GroupTestResult, GroupTestResultToShow], sho
             print(f'# 组名 {group_name} 无差异')
     print()
 
+    # 若有最小级别且不大于「最大警告级」⇒差异警告
+    if alert_max_level is not None and min_diff_level >= 0 and min_diff_level <= alert_max_level:
+        diff_alert(min_diff_level, alert_max_level)
+
     print('分组测试差异分析完毕！')
+
+
+def diff_alert(
+        min_diff_level: int,
+        alert_max_level: int):
+    '''差异警告
+    - 📌在「最小差异」小到一定层级（部分成功<步数不同<用时不同）时警告
+    - 🚩目前调用标准库的`winsound`库 产生声音
+    '''
+    # 文本信息
+    print(
+        f'!!! 警告：推理器测试结果之间存在过大差异\n- 最小差异粒度： {min_diff_level} < {alert_max_level}')
+    # 发声
+    d_level = alert_max_level-min_diff_level
+    try:
+        from winsound import Beep
+        for _ in range(d_level + 1):
+            Beep(500, 1000 // (d_level + 1))
+    except BaseException as e:
+        # * 🚩无法播放
+        print(f'警告：无法调用`winsound`播放声音！{e}')
+        for _ in range(d_level + 1):
+            print('\a')
 
 
 def main_path(path: str) -> None:
