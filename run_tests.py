@@ -383,11 +383,26 @@ def store_group_test(group_results: GroupTestResult, file_root: str, file_name: 
     # 保存CSV
     try_save(test_results_to_csv, f'{file_name}.csv')
 
+
 # 主程序
-
-
-def main():
+def main(argv: List[str]=[]):
     '''主函数（仅直接执行时）'''
+
+    # 参数解析
+    diff_alert_max_level = None
+    if '--diff-alert' in argv:
+        i = argv.index('--diff-alert')
+        assert i >= 0
+        # 尝试解析下一参数
+        next_i = i + 1
+        if next_i < len(argv):
+            try:
+                diff_alert_max_level = int(argv[next_i])
+            except ValueError:
+                pass
+        # 默认仅在「部分成功」时
+        if diff_alert_max_level is None:
+            diff_alert_max_level = 0
 
     # 计时开始 #
     try:
@@ -398,7 +413,11 @@ def main():
 
     # 展示结果 #
     # * 🚩【2024-05-31 17:33:57】仅展示两级（大量测试不方便对比时间）
-    show_test_result(result, total_time, show_diff=True, diff_level=2)
+    show_test_result(
+        result, total_time,
+        show_diff=True,
+        diff_level=2,
+        diff_alert_max_level=diff_alert_max_level)
 
     # 存储结果 #
     main_store(result)
@@ -437,7 +456,9 @@ def main_store(result: GroupTestResult):
 
 def show_test_result(
     result: GroupTestResult, total_time: Optional[float] = None,
-    show_diff: bool = True, diff_level: Optional[int] = 0xff
+    show_diff: bool = True,
+    diff_level: Optional[int] = 0xff,
+    diff_alert_max_level: Optional[int] = None,
 ):
     '''展示所有测试'''
     # 展示表格
@@ -460,8 +481,11 @@ def show_test_result(
     # 展示差异 | 默认显示所有细节
     if show_diff:
         from diff_analyze import show_group_diffs
-        show_group_diffs(result, show_level=diff_level)
+        show_group_diffs(result,
+                         show_level=diff_level,
+                         alert_max_level=diff_alert_max_level)
 
 
 if __name__ == '__main__':
-    main()
+    from sys import argv
+    main(argv)
