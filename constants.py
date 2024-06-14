@@ -487,6 +487,9 @@ if 测试区域开始 := True:  # ! ↑ 这条线上不测试 | 这条线下开�
         TEST_SINGLE_6_uncle = TestFile('6.uncle', 'NAL-6.uncle')
         '''单步推理/6.uncle'''
 
+        # ! ↓目前此测试的测试时间过长，故不纳入默认测试中
+        TEST_STABILITY_1_6 = TestFile('1-6.stability', 'NAL 1-6 长期稳定性')
+
 if 测试区域结束 := False:  # ! ↓分界线之下均不开始测试
     # * NAL-7 * #
 
