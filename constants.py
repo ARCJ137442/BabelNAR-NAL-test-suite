@@ -503,7 +503,7 @@ if 测试区域开始 := True:  # ! ↑ 这条线上不测试 | 这条线下开�
 
         # ! ↓目前此测试的测试时间过长，故不纳入默认测试中
         TEST_STABILITY_1_6 = TestFile(
-            'single_step/1-6.stability', 'NAL 1-6 长期稳定性')
+            '1-6.stability', 'NAL 1-6 长期稳定性')
 
     # * NAL-7 * #
 
