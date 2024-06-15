@@ -3,56 +3,83 @@
 - 📌基于「测试运行」系列方法
 '''
 
-from os.path import basename, isfile, abspath
+import os
+from os.path import basename, abspath
+
 from constants import CONFIG_NAL
 from run_tests import ALL_NARS_TYPES, ALL_TEST_FILES, show_test_result, main_store, main_test
 from toolchain import *
 from util import *
 
 
-def generate_hjson_config(test_name: str, nal_file_path: str = '') -> str:
-    '''生成配置文件内容（字符串）'''
-    nal_file_path = (
-        nal_file_path
-        if nal_file_path
-        # * 🚩↓默认的文件路径
-        else f'./../../nal/single_step/{test_name}.nal'
-    )
+def generate_hjson_config(test_index: str, nal_file_path: str) -> str:
+    '''生成配置文件内容（字符串）
+    Args:
+        - test_index: 测试索引 | 📄"extern/xxx"
+        - nal_file_path: 测试文件路径 | 📄"xxx/yyy/1.0.nal"
+    '''
+    # * 🚩假定文件路径必须存在
+    assert path.isfile(nal_file_path)
+    file_path_str = '"' + repr(nal_file_path).strip('\'') + '"'
+    '''最终被嵌入的路径，包括引号'''
     return f'''
 #hjson
-// * 🎯测试nal {test_name}
+// * 🎯测试nal {test_index}
 // * ℹ️测试环境交由`prelude_test.hjson`加载
 // * 📌原则：每个配置文件中引用的相对路径，均基于「配置文件自身」的路径
 {{
     preludeNAL: {{
         // 预置的NAL测试文件（相对配置文件自身）
-        file: {nal_file_path}
+        file: {file_path_str}
     }}
 }}
 '''.strip()
 
 
-def to_temp_config_path(test_name: str) -> str:
+def to_temp_config_path(test_index: str) -> str:
     '''从`.nal`文件路径，生成临时配置文件路径
     - 🚩【2024-06-07 21:17:29】目前使用文件名在固定路径config/nal生成
-    - 📄"**/*/<file_name>.nal" => "config/nal/<file_name>.hjson"
+    - 📄"xxx/yyy" => "[...]/config/nal/xxx/yyy.hjson"
     '''
-    return CONFIG_NAL + test_name + '.hjson'
+    return CONFIG_NAL + test_index + '.hjson'
 
 
-def try_generate_temp_hjson_config(nal_file_path: str):
-    '''为`.nal`测试文件生成临时hjson配置文件'''
+def generate_test_index_for_nal_file(nal_file_path: str) -> str:
+    '''为外部NAL文件（路径）生成测试索引
+    - 📄"[...]/test/babelnar/nal/测试.test.nal" => "extern/测试.test"
+    '''
+    return trim_right(f'extern/{basename(nal_file_path)}', '.nal')
+
+
+def try_generate_temp_hjson_config(nal_file_path: str, test_index: str):
+    '''为`.nal`测试文件生成临时hjson配置文件
+    - ⚠️包含文件操作
+    '''
     try:
-        test_name = trim_right(basename(nal_file_path), '.nal')
-        config_file_path = to_temp_config_path(test_name)
-        if not isfile(config_file_path):
-            # * 🚩无配置文件⇒生成临时配置文件
-            with open(config_file_path, 'w+', encoding='utf-8') as f:
-                content = generate_hjson_config(
-                    test_name,  # * 🚩↓取绝对路径，避免路径问题
-                    nal_file_path=abspath(nal_file_path))
-                f.write(content)
-                print(f'未找到已有配置文件，已生成临时配置文件：{config_file_path}')
+        config_file_path = to_temp_config_path(test_index)
+        # * 🚩创建or覆写配置文件
+        config_file_dir = path.dirname(config_file_path)
+        # * 🚩无配置文件目录⇒创建目录
+        if not path.exists(config_file_dir):
+            os.makedirs(config_file_dir, exist_ok=True)
+        is_already_exists = path.isfile(config_file_path)
+        '''配置文件是否已存在
+        - 🚩未存在⇒创建，已存在⇒更新
+        '''
+        # * 🚩无配置文件⇒生成临时配置文件
+        with open(config_file_path, 'w+', encoding='utf-8') as f:
+            # 生成内容
+            content = generate_hjson_config(
+                test_index,  # * 🚩↓取绝对路径，避免路径问题
+                nal_file_path)
+            # 写入文件
+            f.write(content)
+        if path.isfile(config_file_path):
+            return config_file_path
+        if is_already_exists:
+            print(f'已生成临时配置文件：{config_file_path}')
+        else:
+            print(f'临时配置文件已更新：{config_file_path}')
     except BaseException as e:
         print(f'生成临时配置文件时出现错误：{e}')
 
@@ -121,17 +148,17 @@ def find_tests_in_file(query_file_path: str) -> List[TestFile]:
     - 🎯实现「任意处NAL脚本均能参与测试」
     '''
     from os.path import isfile
-    file_path = (
-        query_file_path
-        # * 🚩统一斜杠
-        .replace('\\', '/')
-        # * 🚩删去前后空格、引号
-        .strip(' &\\/"\'')
-    )
+    # * 🚩删去前后空格、引号
+    file_path = query_file_path.strip(' &\\/"\'')
+    # * 🚩绝对化，并统一斜杠
+    file_path = abspath(file_path).replace('\\', '/')
     # * 🚩若有文件⇒自动生成临时hjson配置，返回
     if isfile(file_path) and file_path.endswith('.nal'):
-        try_generate_temp_hjson_config(file_path)
-        return [TestFile.from_file_path(file_path)]
+        test_index = generate_test_index_for_nal_file(file_path)
+        test_name = f'NAL测试 {test_index}'
+        try_generate_temp_hjson_config(file_path, test_index)
+        new_test_file = TestFile(test_index, test_name)
+        return [new_test_file]
     else:
         return []
 
@@ -158,6 +185,7 @@ def query_tests(queries: Iterable[str], print_feedback: bool = True, fill_when_e
     try:
         for query in queries:
             # 查询、去重、添加
+            # * 🚩此处的「去重」只针对内建测试：外部测试每次都会新创一个对象，因此允许重复添加
             found = find_tests(query)
             new_tests = collect(filter(lambda test: test not in tests, found))
             if is_empty(new_tests):

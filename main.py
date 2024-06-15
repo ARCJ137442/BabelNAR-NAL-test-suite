@@ -2,6 +2,8 @@
 - 🎯提供一站式程序导引
 '''
 
+from typing import List
+
 from run_tests import main as main_run_tests
 from direct_test import main as main_direct_test
 from result_loader import main as main_result_loader
@@ -35,20 +37,22 @@ PROGRAMS = [
 '''现有的所有测试用程序'''
 
 
-def main():
+def main(extra_programs: List[TestProgram] = []):
     '''主程序'''
+    # * 🚩先与外部传入的「附加测试用程序」混合，产生一个新数组
+    programs = PROGRAMS + extra_programs
     print(f'==== {TEST_SUITE_PROGRAM_NAME} ====')
     print(TEST_SUITE_PROGRAM_DESCRIPTION)
     while True:
         try:
             # * 🚩打印现有程序的信息
             print('现有如下程序可供选择：')
-            for program in PROGRAMS:
+            for program in programs:
                 print(f'* {program.name}')
             # * 🚩获取输入、选择并查找
             query = input('\n输入名称以选择: ')
             selected = find_first(
-                PROGRAMS, lambda p: is_in_or_contains(p.name, query))
+                programs, lambda p: is_in_or_contains(p.name, query))
             # * 🚩执行选中的程序
             if selected is None:
                 print(f'没有找到与{repr(query)}有关的程序！')
@@ -60,7 +64,7 @@ def main():
         except KeyboardInterrupt:
             print('\n程序退出。。。')
             return
-        except Exception as e:
+        except BaseException as e:
             print(f'程序出错：{e}')
 
 
