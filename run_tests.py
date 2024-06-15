@@ -1,4 +1,5 @@
 from typing import Callable, Dict, Tuple
+
 from toolchain import *
 import constants
 from util import *
@@ -385,7 +386,7 @@ def store_group_test(group_results: GroupTestResult, file_root: str, file_name: 
 
 
 # 主程序
-def main(argv: List[str]=[]):
+def main(argv: List[str] = []):
     '''主函数（仅直接执行时）'''
 
     # 参数解析

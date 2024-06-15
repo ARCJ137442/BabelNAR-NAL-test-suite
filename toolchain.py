@@ -2,12 +2,14 @@
 - 🚩调用BabelNAR CLI，启动、运行与自动测试NARS
     - 📄使用Python`subprocess`：https://docs.python.org/3/library/subprocess.html
 '''
+from os import path
 import subprocess
 from subprocess import CompletedProcess, Popen
-from typing import Iterable, List, Optional, Union
 import re
-from util import *
 from time import time, sleep
+from typing import Iterable, List, Optional, Union
+
+from util import *
 
 
 class ProcessResult:
@@ -345,14 +347,27 @@ class TestFile:
     - 📄示例："单步推理 NAL-1.0 修正"
     '''
 
-    nal_index_name: str
+    nal_index: str
     '''用于链接NAL测试文件的「内部名称」
-    - 📄BabelNAR CLI配置`【名称】.hjson`
-    - 📄`.nal`测试文件的名称
-    - 📄示例："1.0"
+    - 📄示例："single_step/1.0"
+    - 📄BabelNAR CLI配置`【配置根目录】/【索引】.hjson`
+    - 📄`.nal`测试文件的背景路径
     '''
 
-    local_kill_java_timeouts:  KillJavaTimeouts
+    @property
+    def nal_index_name(self) -> str:
+        '''从「文件索引」到「NAL索引」
+        - 📄"single_step/1.0" => "1.0"
+        '''
+        return (
+            self.nal_index.split('/')[-1]
+            if '/' in self.nal_index
+            else self.nal_index
+        )
+
+    nal_root_path: str
+
+    local_kill_java_timeouts: KillJavaTimeouts
     '''局部「限时杀Java」超时时间范围
     - 📌现在作为一个「范围」工作
       - 🚩逐个遍历其中的浮点数
@@ -367,34 +382,14 @@ class TestFile:
 
     def __init__(
         self,
-        nal_index_name: str,
+        nal_index: str,
         name: Optional[str] = None,
         *,
         local_kill_java_timeouts: KillJavaTimeouts = None
     ):
-        self.nal_index_name = nal_index_name
+        self.nal_index = nal_index
         self.name = name if name else 'NAL测试'
         self.local_kill_java_timeouts = local_kill_java_timeouts
-
-    @staticmethod
-    def from_file_path(
-        file_path: str,
-        *,
-        local_kill_java_timeouts: KillJavaTimeouts = None
-    ) -> 'TestFile':
-        '''从文件路径获取测试文件'''
-        from os.path import basename
-        nal_index_name = (
-            '.'.join(basename(file_path).split('.')[:-1])
-            if '.' in file_path
-            else file_path
-        )
-        name = f'NAL测试 {nal_index_name}'
-        return TestFile(
-            nal_index_name,
-            name,
-            local_kill_java_timeouts=local_kill_java_timeouts
-        )
 
     def nal_level(self) -> str:
         '''获取NAL层级
@@ -499,7 +494,7 @@ class NARSType:
         # 若为空⇒直接开始一次性测试
         if kill_java_timeouts is None:
             result = run_test_nal(self.launch_config_path,
-                                  test_file.nal_index_name)
+                                  test_file.nal_index)
         # 不为空⇒遍历其中所有「超时杀Java」时长，只要一个成功，即退出——否则失败
         else:
             # 遍历其中所有「超时杀Java」时长
@@ -507,7 +502,7 @@ class NARSType:
                 avoid_timeout = 1
                 while True:
                     result = run_test_nal(self.launch_config_path,
-                                          test_file.nal_index_name,
+                                          test_file.nal_index,
                                           kill_java_timeouts=timeout)
                     # 只返回「进程有效」的结果
                     if result.process_invalid():
@@ -539,7 +534,7 @@ def __build_cli_launch_cmd(*config_paths: str) -> List[str]:
         - 📌按**从先往后**的顺序覆盖其中的配置项
     - ⚠️需要自行输入「启动」配置
     '''
-    # exe前缀
+    # exe前缀 | ⚠️需要动态导入 以避免循环导入
     from constants import BABELNAR_CLI
     cmd = [BABELNAR_CLI]
     # 加入路径
@@ -605,21 +600,25 @@ def run_shell(launch_config_path: str):
 
 def run_test_nal(
         launch_hjson_path: str,
-        nal_hjson_name: str,
+        nal_index: str,
         kill_java_timeouts: float = -1) -> TestResult:
     '''运行指定的NAL测试文件，并返回结果
     - 🎯灵活方便地调用各类测试
 
     Args:
         launch_hjson_path(str): 启动的配置文件路径（用于启动CIN）
-        nal_hjson_name(str): NAL测试配置名，如`1.0`
+        nal_index(str): NAL测试索引，如`single_step/1.0`
         kill_java_timeouts(float): 是否启用「超时杀Java进程」机制，及超时时间；默认为-1，表示不等待
     Returns:
         TestResult: 测试结果
     '''
-    # 构建完整的「NAL预加载」配置文件路径
+    # 构建完整的「NAL预加载」配置文件路径 | ⚠️需要动态导入 以避免循环导入
     from constants import CONFIG_NAL, CONFIG_NAL_PRELUDE
-    NAL_HJSON_PATH = CONFIG_NAL + f'{nal_hjson_name}.hjson'
+    NAL_HJSON_PATH = CONFIG_NAL + f'{nal_index}.hjson'
+
+    # 验证路径
+    if not path.exists(NAL_HJSON_PATH):
+        raise FileNotFoundError(f'找不到NAL测试配置文件：{NAL_HJSON_PATH}')
 
     # 计时器准备
     now = time()

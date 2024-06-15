@@ -20,9 +20,10 @@
 '''
 
 from typing import Dict, List, Optional, Set, Tuple
+from json import loads
+
 from toolchain import NARSType, TestFile, TestResult, show_result
 from run_tests import GroupTestResultToShow, cross_test_str_table, ALL_NARS_TYPES, ALL_TEST_FILES
-from json import loads
 
 CrossTestResult = Dict[Tuple[str, str], TestResult]
 '''测试结果中有关「交叉测试」的返回值

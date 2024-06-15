@@ -8,6 +8,7 @@
 
 
 from typing import Dict, Tuple, Union
+
 from result_loader import load_group_results
 from run_tests import CrossTestResultToShow, GroupTestResult, GroupTestResultToShow, result_to_show
 from toolchain import TestResult
