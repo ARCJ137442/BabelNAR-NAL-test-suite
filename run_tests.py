@@ -390,20 +390,36 @@ def main(argv: List[str] = []):
     '''主函数（仅直接执行时）'''
 
     # 参数解析
-    diff_alert_max_level = None
-    if '--diff-alert' in argv:
-        i = argv.index('--diff-alert')
-        assert i >= 0
-        # 尝试解析下一参数
-        next_i = i + 1
-        if next_i < len(argv):
-            try:
-                diff_alert_max_level = int(argv[next_i])
-            except ValueError:
-                pass
-        # 默认仅在「部分成功」时
-        if diff_alert_max_level is None:
-            diff_alert_max_level = 0
+    def parse_arg_and_int(
+            arg_name: str,
+            default_on_not_exists=None,
+            default_on_no_arg: int = 0,
+    ) -> Optional[int]:
+        '''解析带数值的参数
+        - 🎯解析形如"--arg-name 123"(=> 123)的语法
+        '''
+        if arg_name in argv:
+            i = argv.index(arg_name)
+            assert i >= 0
+            # 尝试解析下一参数
+            next_i = i + 1
+            if next_i < len(argv):
+                try:
+                    return int(argv[next_i])
+                except ValueError:
+                    # 无效参数
+                    return default_on_no_arg
+            # 没有参数
+            else:
+                return default_on_no_arg
+        else:
+            # 没有参数⇒返回默认值
+            return default_on_not_exists
+
+    diff_alert_max_level = parse_arg_and_int(
+        '--diff-alert', None, 0)  # 默认仅在「部分成功」时
+    diff_level = parse_arg_and_int(
+        '--diff-level', 2, 2)  # 默认为2（精确到「步长」）
 
     # 计时开始 #
     try:
@@ -417,7 +433,7 @@ def main(argv: List[str] = []):
     show_test_result(
         result, total_time,
         show_diff=True,
-        diff_level=2,
+        diff_level=diff_level,
         diff_alert_max_level=diff_alert_max_level)
 
     # 存储结果 #
