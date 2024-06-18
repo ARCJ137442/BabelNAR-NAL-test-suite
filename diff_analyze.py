@@ -164,7 +164,7 @@ def show_group_diffs(
         if table.strip():
             print(f'# 组名 {group_name}\n\n{table}')
         else:
-            print(f'# 组名 {group_name} 无差异')
+            print(f'# 组名 {group_name} 在等级 {level} 下 无差异')
     print()
 
     # 若有最小级别且不大于「最大警告级」⇒差异警告
