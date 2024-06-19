@@ -125,19 +125,20 @@ def nars_diff(results: CrossTestResultToShow, show_level: int) -> Tuple[str, int
     diff_levels = []
     for test, nars_results in grouped:
         diff, diff_level = nars_diff_one(nars_results, show_level)
-        diff_levels.append(diff_level)
+        if diff_level >= 0:  # 只在具有「有效差异」时录入 | 🎯避免有效的 0 被 -1 覆盖
+            diff_levels.append(diff_level)
         # 若有内容⇒追加标题并呈现
         if diff:
             print(f'- 测试 {test}\n{diff}', end='')
 
     # 返回
-    return result, min(diff_levels)
+    return result, min(diff_levels) if not is_empty(diff_levels) else -1
 
 
 def request_show_level() -> int:
     while True:
         try:
-            level_str = input('请输入对比等级（0-3，留空默认为2）：')
+            level_str = input('请输入对比等级（1-3，留空默认为2）：')
             return int(level_str) if level_str else 2  # 默认为2
         except ValueError:
             print('输入错误！请重新输入！')
@@ -151,6 +152,7 @@ def show_group_diffs(
 
     # 未指定「对比等级」⇒靠用户输入请求
     level = show_level if show_level else request_show_level()
+    alert_max_level = alert_max_level if alert_max_level else request_show_level()
 
     # 逐组分析并打印测试结果
     print()
@@ -159,7 +161,8 @@ def show_group_diffs(
         # 计算结果
         group_result = result_to_show(cross_result)
         table, diff_level = nars_diff(group_result, level)
-        min_diff_level = min(min_diff_level, diff_level)
+        if diff_level >= 0:
+            min_diff_level = min(min_diff_level, diff_level)
         # 打印结果
         if table.strip():
             print(f'# 组名 {group_name}\n\n{table}')
@@ -184,14 +187,15 @@ def diff_alert(
     # 文本信息
     print(
         f'!!! 警告：推理器测试结果之间存在过大差异\n- 最小差异粒度： {min_diff_level} < {alert_max_level}')
-    # 发声
+    # 发声警告
     d_level = alert_max_level-min_diff_level
     try:
+        # * 🚩使用Python标准库的`winsound`模块
         from winsound import Beep
         for _ in range(d_level + 1):
             Beep(500, 1000 // (d_level + 1))
     except BaseException as e:
-        # * 🚩无法播放
+        # * 🚩无法播放：打印「警告」字符
         print(f'警告：无法调用`winsound`播放声音！{e}')
         for _ in range(d_level + 1):
             print('\a')
