@@ -152,7 +152,6 @@ def show_group_diffs(
 
     # 未指定「对比等级」⇒靠用户输入请求
     level = show_level if show_level else request_show_level()
-    alert_max_level = alert_max_level if alert_max_level else request_show_level()
 
     # 逐组分析并打印测试结果
     print()
