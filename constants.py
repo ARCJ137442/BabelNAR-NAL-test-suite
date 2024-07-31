@@ -77,6 +77,9 @@ CONFIG_NAL = CONFIG_ROOT + 'test_nal/'
 CONFIG_NAL_PRELUDE = CONFIG_ROOT + 'prelude_test.hjson'
 '''用于在BabelNAR CLI启动后预置NAL测试文件的配置（NAL测试环境）'''
 
+CONFIG_LAUNCH_DEMO_158 = CONFIG_ROOT + 'launch_demo_158.hjson'
+'''用于在BabelNAR CLI启动demo-158的配置文件'''
+
 CONFIG_LAUNCH_OPENNARS_158 = CONFIG_ROOT + 'launch_opennars_158.hjson'
 '''用于在BabelNAR CLI启动OpenNARS 1.5.8的配置文件'''
 
@@ -87,6 +90,12 @@ CONFIG_LAUNCH_OPENNARS_304 = CONFIG_ROOT + 'launch_opennars_304.hjson'
 '''用于在BabelNAR CLI启动OpenNARS 3.0.4的配置文件'''
 
 # * === NARS类型 === * #
+
+DEMO_158 = NARSType(
+    'demo-158',
+    launch_config_path=CONFIG_LAUNCH_DEMO_158
+)
+'''配置/demo-158'''
 
 NARS_158 = NARSType(
     'OpenNARS 1.5.8',
