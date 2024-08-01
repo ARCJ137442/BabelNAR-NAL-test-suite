@@ -16,4 +16,6 @@
     }
     // 自动重启（后续会被覆盖）
     autoRestart: true
+    // 短浮点判等误差范围：±0.051 | 保留两位小数
+    shortFloatEpoch: 0.051
 }
