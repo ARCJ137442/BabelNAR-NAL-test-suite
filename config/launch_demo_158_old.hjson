@@ -1,0 +1,21 @@
+#hjson
+// demo-158-old
+// * 🎯配置启动demo-158-old
+{
+    description: "demo-158-old"
+    // 转译器
+    translators: "native"
+    // 启动命令
+    command: {
+        // 命令：启动demo-158-old
+        cmd: "./batch-old.exe"
+        // 传入的命令参数
+        cmdArgs: []
+        // 启动时的工作目录
+        currentDir: ./../executables
+    }
+    // 自动重启（后续会被覆盖）
+    autoRestart: true
+    // 短浮点判等误差范围：±0.051 | 保留两位小数
+    shortFloatEpoch: 0.051
+}
