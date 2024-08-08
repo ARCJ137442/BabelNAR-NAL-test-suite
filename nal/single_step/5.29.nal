@@ -17,7 +17,7 @@ $0.80;0.80;0.95$ <(&&,<robin --> [chirping]>,<robin --> [flying]>) ==> <robin --
 $0.80;0.80;0.95$ <<robin --> [flying]> ==> <robin --> [with_beak]>>. %0.90;0.90%
 
 ' * 💡也许 若 知更鸟会叫 且 知更鸟有喙 则 知更鸟是一种鸟
-''expect-cycle(20,2,0.1s): OUT <(&&,<robin --> [chirping]>,<robin --> [with_beak]>) ==> <robin --> bird>>. %1.00;0.42%
+''expect-cycle(40,2,0.05s): OUT <(&&,<robin --> [chirping]>,<robin --> [with_beak]>) ==> <robin --> bird>>. %1.00;0.42%
 
 ' * 🔚退出测试
 ''terminate(if-no-user)
