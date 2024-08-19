@@ -129,7 +129,7 @@ def cross_test_str_table(results: Union[CrossTestResult, CrossTestResultToShow])
     '''表格：字符串二维数组'''
 
     # 表头
-    table.append(["推理器类型", "推理测试名称", "🎯", "步数", "运行耗时(秒)"])
+    table.append(["Reasoner", "Test", "🎯", "Cycles", "Time Elapsed(s)"])
 
     # 表格
     for (nars_name, test_name), result in results.items():
@@ -308,23 +308,23 @@ def test_results_to_csv(group_results: GroupTestResult) -> Union[str, bytes]:
 
     # 表头 | ⚠️【2024-05-26 17:30:02】此处全英文：避免中文编码问题
     add_row(
-        "测试组",
-        "推理器类型",
-        "推理测试名称",
-        "是否成功",
-        "步数",
-        "运行耗时(秒)",
-        line_num_header='序号',
+        "Test group",
+        "Reasoner",
+        "Test",
+        "Success or not",
+        "Cycles",
+        "Time Elapsed(s)",
+        line_num_header='Serial',
     )
 
     # 表格
     for group_name, cross_result in group_results.items():
         for (nars, test), result in cross_result.items():
             # 成功与否
-            success = '是' if result.success else '否'
+            success = 'Y' if result.success else 'N'
             # 成功步数/失败（不显示）
             steps = (
-                '，'.join(map(str, result.success_cycles))
+                ' + '.join(map(str, result.success_cycles))
                 if result.success_cycles
                 else '')
             time_diff = str(result.time_diff)
@@ -492,8 +492,9 @@ def show_test_result(
         table = cross_test_str_table(results)
 
         # 展示
-        name = f"测试组 {group_name}" if group_name else "所有NAL测试"
-        print(f'  {name} 运行完毕，总运行耗时 {d_time:.2f} 秒：\n{table}')
+        name = f"Test group {group_name}" if group_name else "All tests"
+        print(
+            f'  {name} run complete, total running time is {d_time:.2f}s:\n{table}')
 
     # 展示差异 | 默认显示所有细节
     if show_diff:
